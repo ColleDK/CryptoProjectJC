@@ -1,4 +1,4 @@
-package com.example.cryptoprojectjetpackcompose
+package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,9 +8,9 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.cryptoprojectjetpackcompose.ui.theme.CryptoProjectJetpackComposeTheme
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
 
-class MainActivity : ComponentActivity() {
+class UserInfoActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -31,7 +31,7 @@ fun Greeting(name: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun DefaultPreview2() {
     CryptoProjectJetpackComposeTheme {
         Greeting("Android")
     }

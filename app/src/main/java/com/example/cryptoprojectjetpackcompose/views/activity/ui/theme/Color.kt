@@ -1,4 +1,4 @@
-package com.example.cryptoprojectjetpackcompose.ui.theme
+package com.example.cryptoprojectjetpackcompose.views.activity.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
