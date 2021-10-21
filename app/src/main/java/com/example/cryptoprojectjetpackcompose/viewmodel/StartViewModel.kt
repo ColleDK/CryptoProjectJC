@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
+import com.example.cryptoprojectjetpackcompose.model.UserModel
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -46,8 +47,16 @@ class StartViewModel: ViewModel() {
                 }
             })
         }
-
     }
 
+
+    private val _user = MutableLiveData<UserModel>()
+    val user: LiveData<UserModel> = _user
+
+    fun getUser(){
+        viewModelScope.launch {
+            _user.value = ServiceLocator.getUserRepository().getUser()
+        }
+    }
 
 }

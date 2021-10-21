@@ -1,7 +1,9 @@
 package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -20,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
+import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
 import com.example.cryptoprojectjetpackcompose.viewmodel.StartViewModel
 
@@ -33,17 +36,21 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun StartScreen(viewModel: StartViewModel = StartViewModel()){
     val list = viewModel.cryptoList.observeAsState()
+    val user = viewModel.user.observeAsState()
+
     viewModel.getCryptos()
-    list.value?.let { CryptoList(cryptoList = it) }
+    viewModel.getUser()
+
+    list.value?.let { user.value?.let { it1 -> CryptoList(cryptoList = it, user = it1) } }
 }
 
 @Composable
-fun CryptoList(cryptoList: MutableList<CryptoModel>){
+fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
     val context = LocalContext.current
     Column() {
         Row(Modifier.fillMaxWidth()) {
             Button(onClick = { context.startActivity(Intent(context, UserInfoActivity::class.java)) }, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)) {
-                Text(text = "Points: 83728173921 USD", textAlign = TextAlign.Center)
+                Text(text = "Points: " + user.balance.toString() + " USD", textAlign = TextAlign.Center)
             }
         }
         LazyColumn(Modifier.fillMaxSize(1f)){
@@ -52,7 +59,6 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>){
             }
         }
     }
-
 }
 
 @Composable

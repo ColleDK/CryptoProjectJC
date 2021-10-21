@@ -1,8 +1,10 @@
 package com.example.cryptoprojectjetpackcompose
 
 import android.content.Context
+import android.preference.PreferenceManager
 import com.example.cryptoprojectjetpackcompose.db.DBRoom
 import com.example.cryptoprojectjetpackcompose.repository.CryptoRepository
+import com.example.cryptoprojectjetpackcompose.repository.UserRepository
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCrypto
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCryptoPic
 import com.google.gson.GsonBuilder
@@ -47,11 +49,18 @@ object ServiceLocator {
                         retrofitPic)
     }
 
+    private val userRepo by lazy {
+        UserRepository(
+            dbRoom,
+            PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        )
+    }
+
 
     fun getDBRoom() = this.dbRoom
     fun getRetrofitClient() = this.retrofit
     fun getRetrofitClientPic() = this.retrofitPic
     fun getCryptoRepository() = this.cryptoRepo
-
+    fun getUserRepository() = this.userRepo
 
 }
