@@ -9,7 +9,6 @@ import com.example.cryptoprojectjetpackcompose.web.dto.CryptoPriceDto
 class CryptoRepository(
     private val dbRoom: DBRoom,
     private val retrofitClient: WebServiceCrypto,
-    private val retrofitClientPic: WebServiceCryptoPic
 ) {
 
     suspend fun getCrypto(id: String): CryptoModel{
