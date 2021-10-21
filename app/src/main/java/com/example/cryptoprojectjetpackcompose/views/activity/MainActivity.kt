@@ -1,12 +1,11 @@
 package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.preference.PreferenceManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -63,7 +62,8 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
 
 @Composable
 fun CryptoItem(crypto: CryptoModel){
-    Row(Modifier.fillMaxWidth(), Arrangement.Start) {
+    val context = LocalContext.current
+    Row(Modifier.fillMaxWidth().clickable(onClick = {context.startActivity(Intent(context, BuySellActivity::class.java).putExtra("cryptoName", crypto.name))}), Arrangement.Start) {
         crypto.picture?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "",
             Modifier
                 .size(32.dp)

@@ -4,6 +4,7 @@ import com.example.cryptoprojectjetpackcompose.db.DBRoom
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCrypto
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCryptoPic
+import com.example.cryptoprojectjetpackcompose.web.dto.CryptoPriceDto
 
 class CryptoRepository(
     private val dbRoom: DBRoom,
@@ -34,5 +35,8 @@ class CryptoRepository(
         return result
     }
 
+    suspend fun getCryptoPrices(id: String): List<CryptoPriceDto> {
+        return retrofitClient.getCryptoPrices(id).data
+    }
 
 }

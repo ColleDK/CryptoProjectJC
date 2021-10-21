@@ -88,5 +88,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation 'androidx.room:room-ktx:2.3.0'
 
-
+    // chart builder
+    //implementation 'com.github.tehras:charts:Tag'
+    implementation 'com.github.madrapps:plot:0.1.1'
 }
