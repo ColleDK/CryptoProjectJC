@@ -45,8 +45,7 @@ object ServiceLocator {
 
     private val cryptoRepo by lazy {
         CryptoRepository(dbRoom,
-                        retrofit,
-                        retrofitPic)
+                        retrofit)
     }
 
     private val userRepo by lazy {

@@ -9,7 +9,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
+import com.example.cryptoprojectjetpackcompose.db.entity.TransactionEntity
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
+import com.example.cryptoprojectjetpackcompose.model.TransactionModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.web.dto.CryptoPriceDto
 import com.madrapps.plot.line.DataPoint
@@ -83,5 +85,16 @@ class BuySellViewModel: ViewModel() {
             _cryptoPrices.value = newList
         }
     }
+
+    fun buyCrypto(crypto: CryptoModel, payment: Double){
+        if (payment > user.component1()[0].balance) throw Exception("You don't have enough money")
+        viewModelScope.launch {
+            val transaction = TransactionModel(cryptoSymbol = crypto.symbol, volume = (payment / crypto.priceUsd), price = crypto.priceUsd, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.BOUGHT)
+            ServiceLocator.getDBRoom().transactionDao().insertTransaction(transaction.toEntity())
+            ServiceLocator.getUserRepository().updateUser(user.component1()[0])
+        }
+
+    }
+
 
 }

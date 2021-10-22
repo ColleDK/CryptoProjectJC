@@ -38,4 +38,12 @@ class UserRepository(
         prefs.edit().putBoolean("instantiated", true).apply()
         return user.toModel()
     }
+
+    suspend fun updateUser(newUser: UserModel) {
+        val user = dbRoom.userDao().getUsers()
+        val currentUser = newUser.toEntity(user[0].userID)
+        dbRoom.userDao().updateUser(currentUser)
+    }
+
+
 }

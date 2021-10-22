@@ -1,6 +1,7 @@
 package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -66,8 +67,6 @@ fun BuySellScreen(viewModel: BuySellViewModel = BuySellViewModel()){
         viewModel.getUser()
     }
 
-
-    // TODO get changes in price for crypto
     CryptoBuyerSeller(crypto = cryptoObserver.value, user.value, listOf(cryptoPrices.value))
 }
 
@@ -99,7 +98,7 @@ fun CryptoBuyerSellerItem(crypto: CryptoModel){
                     .align(Alignment.CenterVertically)) }
             Column() {
                 Text(text = crypto.name + " (" + crypto.symbol + ")")
-                Text(text = "$" + crypto.priceUsd)
+                Text(text = "$" + "%.3f".format(crypto.priceUsd))
             }
         }
 
@@ -119,7 +118,8 @@ fun CryptoBuyerSellerMiddle(user: UserModel, currentCrypt: CryptoModel){
         Text(text = "$supply x ${currentCrypt.priceUsd}")
         Text(text = "Value ${supply * currentCrypt.priceUsd}")
         Row(Modifier.fillMaxWidth(1f), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = { /*TODO change screen*/ }) {
+            val localContext = LocalContext.current
+            Button(onClick = { localContext.startActivity(Intent(localContext, BuyCryptoActivity::class.java).putExtra("crypto", currentCrypt)) }) {
                 Text(text = "Buy")
             }
             Button(onClick = { /*TODO change screen*/ }) {

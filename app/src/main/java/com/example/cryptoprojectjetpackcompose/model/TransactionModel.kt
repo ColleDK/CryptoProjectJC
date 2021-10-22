@@ -9,4 +9,6 @@ data class TransactionModel(
     var price: Double,
     var timestamp: Date,
     var state: TransactionEntity.Companion.TransactionState
-)
+){
+    fun toEntity() = TransactionEntity(0, cryptoSymbol, volume, price, timestamp, state)
+}
