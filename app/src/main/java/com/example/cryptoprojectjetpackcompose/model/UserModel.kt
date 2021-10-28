@@ -7,8 +7,11 @@ data class UserModel(
     var currentCryptos: MutableList<CryptoModel>,
     var transactions: MutableList<TransactionModel>
 ) {
-    fun toEntity(id: Int): UserEntity {
-        val list: List<String> = listOf(currentCryptos.forEach { it.name }.toString())
-        return UserEntity(id, balance, list)
+    fun toEntity(): UserEntity {
+        val tempListCrypto: MutableList<String> = mutableListOf()
+        currentCryptos.forEach{tempListCrypto.add(it.name)}
+        val cryptoList: List<String> = tempListCrypto.toList()
+
+        return UserEntity(0, balance, cryptoList)
     }
 }

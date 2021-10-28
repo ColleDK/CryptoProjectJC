@@ -87,14 +87,17 @@ class BuySellViewModel: ViewModel() {
     }
 
     fun buyCrypto(crypto: CryptoModel, payment: Double){
-        if (payment > user.component1()[0].balance) throw Exception("You don't have enough money")
+        if (payment > user.component1()[0].balance) return
         viewModelScope.launch {
-            val transaction = TransactionModel(cryptoSymbol = crypto.symbol, volume = (payment / crypto.priceUsd), price = crypto.priceUsd, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.BOUGHT)
+            val transaction = TransactionModel(cryptoSymbol = crypto.symbol, volume = (payment / crypto.priceUsd), price = payment, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.BOUGHT)
             ServiceLocator.getDBRoom().transactionDao().insertTransaction(transaction.toEntity())
+
+            user.component1()[0].balance -= payment
+            user.component1()[0].currentCryptos.add(crypto)
+
+
             ServiceLocator.getUserRepository().updateUser(user.component1()[0])
+
         }
-
     }
-
-
 }

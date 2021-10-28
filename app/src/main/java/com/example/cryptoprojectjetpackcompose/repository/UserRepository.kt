@@ -1,6 +1,7 @@
 package com.example.cryptoprojectjetpackcompose.repository
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.example.cryptoprojectjetpackcompose.db.DBRoom
 import com.example.cryptoprojectjetpackcompose.db.entity.TransactionEntity
 import com.example.cryptoprojectjetpackcompose.db.entity.UserEntity
@@ -14,14 +15,18 @@ class UserRepository(
 
     suspend fun getUser(): UserModel {
         // if new user
+        Log.e("KOGEPAGEA", prefs.getBoolean("instantiated", false).toString())
+        println(prefs.getBoolean("instantiated", false))
         if (!prefs.getBoolean("instantiated", false)){
             return createUser()
         }
 
         // load user from database
         val user = dbRoom.userDao().getUserWithCrypto()
+        Log.e("KOGEPAGEA", user[0].currentCryptos.toString())
         val result = user[0].userEntity.toModel()
         for (crypt in user[0].currentCryptos){
+            Log.e("KOGEPAGEA", crypt.toModel().toString())
             result.currentCryptos.add(crypt.toModel())
         }
 
@@ -40,9 +45,8 @@ class UserRepository(
     }
 
     suspend fun updateUser(newUser: UserModel) {
-        val user = dbRoom.userDao().getUsers()
-        val currentUser = newUser.toEntity(user[0].userID)
-        dbRoom.userDao().updateUser(currentUser)
+        val userEntity = newUser.toEntity()
+        dbRoom.userDao().updateUser(userEntity.balance, userEntity.ownedCryptoName.joinToString(separator = ","))
     }
 
 
