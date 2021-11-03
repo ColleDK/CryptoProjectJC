@@ -92,7 +92,7 @@ fun CryptoSellerMiddle(crypto: CryptoModel, viewModel: BuySellViewModel){
             Text(text = crypto.symbol)
             Text(text = "%.3f".format((if (usdText == "") 0.0 else usdText.toDouble()) / crypto.priceUsd), Modifier.padding(start = 10.dp))
         }
-        Button(onClick = { viewModel.buyCrypto(crypto,if (usdText == "") 0.0 else usdText.toDouble())},
+        Button(onClick = { viewModel.sellCrypto(crypto,if (usdText == "") 0.0 else usdText.toDouble())},
             Modifier
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth(.7f)) {
