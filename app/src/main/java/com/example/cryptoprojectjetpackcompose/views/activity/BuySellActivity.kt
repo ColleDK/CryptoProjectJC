@@ -113,7 +113,7 @@ fun CryptoBuyerSellerMiddle(user: UserModel, currentCrypt: CryptoModel){
             .fillMaxWidth()
             .background(Color.Gray)
             .padding(top = 10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        val supply = if (user.currentCryptos.isEmpty() || user.currentCryptos.indexOf(currentCrypt) == -1) 0.0 else user.currentCryptos[user.currentCryptos.indexOf(currentCrypt)].supply
+        val supply = if (user.currentCryptos.isEmpty() || user.currentCryptos.indexOf(currentCrypt) == -1) 0.0 else user.currentCryptos.elementAt(user.currentCryptos.indexOf(currentCrypt)).supply
         Text(text = "You have $supply ${currentCrypt.symbol.toUpperCase()}")
         Text(text = "$supply x ${currentCrypt.priceUsd}")
         Text(text = "Value ${supply * currentCrypt.priceUsd}")
@@ -122,7 +122,7 @@ fun CryptoBuyerSellerMiddle(user: UserModel, currentCrypt: CryptoModel){
             Button(onClick = { localContext.startActivity(Intent(localContext, BuyCryptoActivity::class.java).putExtra("crypto", currentCrypt)) }) {
                 Text(text = "Buy")
             }
-            Button(onClick = { /*TODO change screen*/ }) {
+            Button(onClick = { localContext.startActivity(Intent(localContext, SellCryptoActivity::class.java).putExtra("crypto", currentCrypt)) }) {
                 Text(text = "Sell")
             }
         }
@@ -137,13 +137,17 @@ fun ChartBuilder(cryptoPrices: List<DataPoint>){
     LineGraph(plot = LinePlot(
         listOf(LinePlot.Line(
             cryptoPrices,
-            LinePlot.Connection(color = Color.Red, 2.dp),
+            LinePlot.Connection{ start, end ->
+                var color: Color
+                if (start.y < end.y) color = Color.Red else color = Color.Green
+                drawLine(color = color, start = start, end = end, strokeWidth = 4.dp.toPx())
+            },
             LinePlot.Intersection{ center, _ ->
                 val px = 2.dp.toPx()
                 val topLeft = Offset(center.x - px, center.y - px)
-                drawRect(Color.Red, topLeft, Size(px * 2, px * 2))
+                drawRect(Color.Black, topLeft, Size(px, px), alpha = 0.2f)
             }, LinePlot.Highlight(color = Color.Yellow)
-        )), grid = LinePlot.Grid(color = Color.Gray, steps = cryptoPrices.size), yAxis = LinePlot.YAxis(steps = 10, roundToInt = false)
+        )) , grid = LinePlot.Grid(color = Color.Gray, steps = cryptoPrices.size), yAxis = LinePlot.YAxis(steps = 10, roundToInt = false)
         ), modifier = Modifier
         .fillMaxWidth()
         .height(400.dp),

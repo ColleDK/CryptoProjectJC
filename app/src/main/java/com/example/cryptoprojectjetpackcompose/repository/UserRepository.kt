@@ -23,7 +23,7 @@ class UserRepository(
 
         // load user from database
         val user = dbRoom.userDao().getUserWithCrypto()
-        Log.e("KOGEPAGEA", user[0].currentCryptos.toString())
+        Log.e("KOGEPAGEA", user.toString())
         val result = user[0].userEntity.toModel()
         for (crypt in user[0].currentCryptos){
             Log.e("KOGEPAGEA", crypt.toModel().toString())

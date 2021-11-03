@@ -4,7 +4,7 @@ import com.example.cryptoprojectjetpackcompose.db.entity.UserEntity
 
 data class UserModel(
     var balance: Double,
-    var currentCryptos: MutableList<CryptoModel>,
+    var currentCryptos: MutableSet<CryptoModel>,
     var transactions: MutableList<TransactionModel>
 ) {
     fun toEntity(): UserEntity {

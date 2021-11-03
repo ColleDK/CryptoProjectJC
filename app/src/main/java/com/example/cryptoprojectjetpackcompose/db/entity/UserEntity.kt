@@ -10,6 +10,6 @@ data class UserEntity(
     var balance: Double,
     var ownedCryptoName: List<String>) {
 
-    fun toModel() = UserModel(balance = balance, mutableListOf(), mutableListOf())
+    fun toModel() = UserModel(balance = balance, mutableSetOf(), mutableListOf())
 
 }

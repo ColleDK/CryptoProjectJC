@@ -17,8 +17,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.StartViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.UserInfoViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
 
 class UserInfoActivity : ComponentActivity() {
@@ -36,19 +38,21 @@ class UserInfoActivity : ComponentActivity() {
 }
 
 @Composable
-fun PortfolioScreen(viewModel: StartViewModel = StartViewModel()){
+fun PortfolioScreen(viewModel: StartViewModel = StartViewModel(), viewModelUserInfo: UserInfoViewModel = UserInfoViewModel()){
     val user = viewModel.user.observeAsState()
+    val cryptoList = viewModelUserInfo.cryptoListInfo
 
     viewModel.getUser()
 
-    user.value?.let { it -> PortfolioList(user = it) }
+    user.value?.let { it -> PortfolioList(user = it, cryptoListState = cryptoList.value, viewModelUserInfo) }
 }
 
 
 
 @Composable
-fun PortfolioList(user: UserModel){
+fun PortfolioList(user: UserModel, cryptoListState: List<CryptoModel>, viewModelUserInfo: UserInfoViewModel){
     val context = LocalContext.current
+    viewModelUserInfo.getUserCryptoPics(user.currentCryptos.toList())
     Column() {
         Row(Modifier.fillMaxWidth()) {
             Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)) {
@@ -67,7 +71,7 @@ fun PortfolioList(user: UserModel){
         }
 
         LazyColumn(Modifier.fillMaxSize(1f)){
-            items(user.currentCryptos){ item ->
+            items(cryptoListState){ item ->
                 CryptoItem(crypto = item)
             }
         }
