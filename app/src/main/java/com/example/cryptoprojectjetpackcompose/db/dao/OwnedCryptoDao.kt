@@ -1,0 +1,20 @@
+package com.example.cryptoprojectjetpackcompose.db.dao
+
+import androidx.room.*
+import com.example.cryptoprojectjetpackcompose.db.entity.CryptoEntity
+import com.example.cryptoprojectjetpackcompose.db.entity.OwnedCryptoEntity
+
+@Dao
+interface OwnedCryptoDao {
+    @Query("SELECT * FROM OwnedCryptoEntity")
+    suspend fun getOwnedCryptos(): List<OwnedCryptoEntity>
+
+    @Query("SELECT * FROM OwnedCryptoEntity WHERE cryptoName = :cryptoName")
+    suspend fun getOwnedCrypto(cryptoName: String): OwnedCryptoEntity
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOwnedCrypto(vararg crypto: OwnedCryptoEntity)
+
+    @Delete
+    suspend fun deleteOwnedCrypto(crypto: OwnedCryptoEntity)
+}

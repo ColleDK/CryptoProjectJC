@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Initialize the screen with the data we want to get
 @Composable
 fun InitStartScreen(viewModel: StartViewModel = StartViewModel()){
     viewModel.getCryptos()
@@ -41,6 +42,7 @@ fun InitStartScreen(viewModel: StartViewModel = StartViewModel()){
 }
 
 
+// Set the observers and create the list of cryptos
 @Composable
 fun StartScreen(viewModel: StartViewModel){
     val list = viewModel.cryptoList.observeAsState()
@@ -51,14 +53,16 @@ fun StartScreen(viewModel: StartViewModel){
 
 @Composable
 fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
-    Log.i("MainActivity", "CryptoList update}")
     val context = LocalContext.current
     Column() {
+        // Header with user info
         Row(Modifier.fillMaxWidth()) {
+            // If we click the header we want to direct to the user info page
             Button(onClick = { context.startActivity(Intent(context, UserInfoActivity::class.java)) }, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)) {
                 Text(text = "Points: " + user.balance.toString() + " USD", textAlign = TextAlign.Center)
             }
         }
+        // List of cryptos
         LazyColumn(Modifier.fillMaxSize(1f)){
             items(cryptoList){ item ->
                 CryptoItem(crypto = item)
@@ -67,6 +71,7 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
     }
 }
 
+// The adapter for each crypto
 @Composable
 fun CryptoItem(crypto: CryptoModel){
     val context = LocalContext.current
@@ -74,6 +79,7 @@ fun CryptoItem(crypto: CryptoModel){
         Modifier
             .fillMaxWidth()
             .clickable(onClick = {
+                // If we click an item in the list we want to go to the buy/sell page and the specific crypto is sent with the intent
                 context.startActivity(
                     Intent(
                         context,

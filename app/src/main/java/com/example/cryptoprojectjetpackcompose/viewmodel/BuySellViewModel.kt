@@ -89,7 +89,7 @@ class BuySellViewModel: ViewModel() {
     fun buyCrypto(crypto: CryptoModel, payment: Double){
         if (payment > user.component1()[0].balance) return
         viewModelScope.launch {
-            val transaction = TransactionModel(cryptoSymbol = crypto.symbol, volume = (payment / crypto.priceUsd), price = payment, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.BOUGHT)
+            val transaction = TransactionModel(cryptoName = crypto.name, volume = (payment / crypto.priceUsd), price = payment, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.BOUGHT)
             ServiceLocator.getDBRoom().transactionDao().insertTransaction(transaction.toEntity())
 
             user.component1()[0].balance -= payment
@@ -105,7 +105,7 @@ class BuySellViewModel: ViewModel() {
     fun sellCrypto(crypto: CryptoModel, amount: Double){
         if (amount > user.component1()[0].currentCryptos.elementAt(user.component1()[0].currentCryptos.indexOf(crypto)).supply){
             viewModelScope.launch {
-                val transaction = TransactionModel(cryptoSymbol = crypto.symbol, volume = amount, price = crypto.priceUsd*amount, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.SOLD)
+                val transaction = TransactionModel(cryptoName = crypto.name, volume = amount, price = crypto.priceUsd*amount, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.SOLD)
                 ServiceLocator.getDBRoom().transactionDao().insertTransaction(transaction.toEntity())
 
                 user.component1()[0].balance += amount*crypto.priceUsd

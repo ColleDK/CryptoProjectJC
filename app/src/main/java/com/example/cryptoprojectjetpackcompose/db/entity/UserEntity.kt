@@ -7,8 +7,7 @@ import com.example.cryptoprojectjetpackcompose.model.UserModel
 @Entity
 data class UserEntity(
     @PrimaryKey(autoGenerate = true) var userID: Int = 0,
-    var balance: Double,
-    var ownedCryptoName: List<String>) {
+    var balance: Double) {
 
     fun toModel() = UserModel(balance = balance, mutableSetOf(), mutableListOf())
 

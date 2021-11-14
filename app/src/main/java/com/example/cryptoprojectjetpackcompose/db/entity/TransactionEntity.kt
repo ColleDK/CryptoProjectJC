@@ -8,7 +8,7 @@ import java.util.*
 @Entity
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = true) var transactionID: Int = 0,
-    var cryptoSymbol: String,
+    var cryptoName: String,
     var volume: Double,
     var price: Double,
     var timestamp: Date,
@@ -21,6 +21,6 @@ data class TransactionEntity(
         }
     }
 
-    fun toModel() = TransactionModel(cryptoSymbol, volume, price, timestamp, state)
+    fun toModel() = TransactionModel(cryptoName, volume, price, timestamp, state)
 
 }
