@@ -18,7 +18,7 @@ class UserInfoViewModel: ViewModel() {
 
     fun getUserCryptoPics(cryptoList: List<CryptoModel>){
         for (crypto in cryptoList){
-            Log.d("OGPEAKGOAP", crypto.toString())
+            Log.d("CryptoPicture", crypto.toString())
             viewModelScope.launch {
                 ServiceLocator.getRetrofitClientPic().getCryptoPic(crypto.symbol.toLowerCase()).enqueue(object: retrofit2.Callback<ResponseBody>{
                     override fun onResponse(

@@ -32,29 +32,34 @@ class BuyCryptoActivity : ComponentActivity() {
             CryptoProjectJetpackComposeTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    BuyCryptoScreen()
+                    InitBuyScreen()
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun BuyCryptoScreen(viewModel: BuySellViewModel = BuySellViewModel()){
+fun InitBuyScreen(viewModel: BuySellViewModel = BuySellViewModel()){
+    // Get the crypto to be bought from the intent
     val context = LocalContext.current
     val intent = (context as Activity).intent
     val crypto = intent.getSerializableExtra("crypto") as CryptoModel
 
+    // Get the data from the viewmodel
+    viewModel.getCrypto(crypto.name)
+    viewModel.getUser()
+
+    BuyCryptoScreen(viewModel = viewModel)
+}
+
+
+@Composable
+fun BuyCryptoScreen(viewModel: BuySellViewModel){
     // set up observers for necessary data
     val cryptoObserver = viewModel.crypto
     val user = viewModel.user
 
-    // stop updating constantly
-    if (cryptoObserver.component1().isEmpty()) {
-        viewModel.getCrypto(crypto.name)
-        viewModel.getUser()
-    }
     CryptoBuyer(crypto = cryptoObserver.component1(), user = user.component1(), viewModel)
 }
 
@@ -111,6 +116,6 @@ fun CryptoBuyerUserInfo(user: UserModel){
 @Composable
 fun DefaultPreview4() {
     CryptoProjectJetpackComposeTheme {
-        BuyCryptoScreen()
+        InitBuyScreen()
     }
 }

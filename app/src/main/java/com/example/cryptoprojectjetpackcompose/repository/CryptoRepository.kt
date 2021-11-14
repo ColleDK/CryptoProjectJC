@@ -46,6 +46,7 @@ class CryptoRepository(
     // Get the yearly price points for a single crypto
     suspend fun getCryptoPrices(id: String): List<CryptoPriceDto> {
         try{
+            Log.d("CryptoPrices", "getCryptoPrices: Getting crypto prices with id=$id")
             return retrofitClient.getCryptoPrices(id).data
         } catch (e: Exception){
             Log.d("CryptoError", e.message!!)

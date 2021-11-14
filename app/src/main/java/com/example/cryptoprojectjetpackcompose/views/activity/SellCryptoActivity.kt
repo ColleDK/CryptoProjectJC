@@ -56,6 +56,7 @@ fun SellCryptoScreen(viewModel: BuySellViewModel = BuySellViewModel()){
         viewModel.getUser()
     }
 
+    CryptoSeller(crypto = cryptoObserver.value, user = user.value, viewModel = viewModel)
 }
 
 @Composable

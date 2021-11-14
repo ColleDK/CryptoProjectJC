@@ -15,7 +15,7 @@ class UserRepository(
 
     suspend fun getUser(): UserModel {
         // if new user
-        Log.e("KOGEPAGEA", prefs.getBoolean("instantiated", false).toString())
+        Log.e("UserInstantiated", prefs.getBoolean("instantiated", false).toString())
         println(prefs.getBoolean("instantiated", false))
         if (!prefs.getBoolean("instantiated", false)){
             return createUser()
@@ -23,10 +23,10 @@ class UserRepository(
 
         // load user from database
         val user = dbRoom.userDao().getUserWithCrypto()
-        Log.e("KOGEPAGEA", user.toString())
+        Log.e("CurrentUser", user.toString())
         val result = user[0].userEntity.toModel()
         for (crypt in user[0].currentCryptos){
-            Log.e("KOGEPAGEA", crypt.toModel().toString())
+            Log.e("UserCryptos", crypt.toModel().toString())
             result.currentCryptos.add(crypt.toModel())
         }
 

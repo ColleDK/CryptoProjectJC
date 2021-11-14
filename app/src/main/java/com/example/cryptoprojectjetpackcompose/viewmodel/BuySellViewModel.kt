@@ -75,7 +75,7 @@ class BuySellViewModel: ViewModel() {
 
     fun getCryptoPrices(id: String){
         viewModelScope.launch {
-            val result = ServiceLocator.getCryptoRepository().getCryptoPrices(id.lowercase(Locale.getDefault()))
+            val result = ServiceLocator.getCryptoRepository().getCryptoPrices((id.lowercase(Locale.getDefault())).replace(' ','-'))
             val newList = mutableListOf<DataPoint>()
 
             result.forEachIndexed{index, element ->

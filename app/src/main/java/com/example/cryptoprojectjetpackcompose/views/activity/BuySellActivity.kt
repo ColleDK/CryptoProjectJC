@@ -138,15 +138,14 @@ fun ChartBuilder(cryptoPrices: List<DataPoint>){
         listOf(LinePlot.Line(
             cryptoPrices,
             LinePlot.Connection{ start, end ->
-                var color: Color
-                if (start.y < end.y) color = Color.Red else color = Color.Green
+                val color: Color = if (start.y < end.y) Color.Red else Color.Green
                 drawLine(color = color, start = start, end = end, strokeWidth = 4.dp.toPx())
             },
             LinePlot.Intersection{ center, _ ->
                 val px = 2.dp.toPx()
                 val topLeft = Offset(center.x - px, center.y - px)
                 drawRect(Color.Black, topLeft, Size(px, px), alpha = 0.2f)
-            }, LinePlot.Highlight(color = Color.Yellow)
+            }, LinePlot.Highlight(color = Color.Yellow), LinePlot.AreaUnderLine(color = Color.Blue, 0.1f)
         )) , grid = LinePlot.Grid(color = Color.Gray, steps = cryptoPrices.size), yAxis = LinePlot.YAxis(steps = 10, roundToInt = false)
         ), modifier = Modifier
         .fillMaxWidth()

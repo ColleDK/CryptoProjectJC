@@ -38,7 +38,10 @@ class StartViewModel: ViewModel() {
                     response: Response<ResponseBody>
                 ) {
                     if (response.isSuccessful){
-                        crypto.picture = BitmapFactory.decodeStream(response.body()?.byteStream())
+                        Log.d("CryptoPicture", "onResponse: success ${crypto.name}")
+                        val current = _cryptoList.value
+                        val replacement = current?.map { if (it == crypto) it.copy(picture = BitmapFactory.decodeStream(response.body()?.byteStream())) else it } as MutableList<CryptoModel>
+                        _cryptoList.value = replacement
                     }
                 }
 

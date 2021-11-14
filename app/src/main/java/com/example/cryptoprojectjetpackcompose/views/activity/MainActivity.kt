@@ -2,6 +2,7 @@ package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -28,23 +29,29 @@ import com.example.cryptoprojectjetpackcompose.viewmodel.StartViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { StartScreen() }
+        setContent { InitStartScreen() }
     }
 }
 
 @Composable
-fun StartScreen(viewModel: StartViewModel = StartViewModel()){
-    val list = viewModel.cryptoList.observeAsState()
-    val user = viewModel.user.observeAsState()
-
+fun InitStartScreen(viewModel: StartViewModel = StartViewModel()){
     viewModel.getCryptos()
     viewModel.getUser()
+    StartScreen(viewModel)
+}
+
+
+@Composable
+fun StartScreen(viewModel: StartViewModel){
+    val list = viewModel.cryptoList.observeAsState()
+    val user = viewModel.user.observeAsState()
 
     list.value?.let { user.value?.let { it1 -> CryptoList(cryptoList = it, user = it1) } }
 }
 
 @Composable
 fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
+    Log.i("MainActivity", "CryptoList update}")
     val context = LocalContext.current
     Column() {
         Row(Modifier.fillMaxWidth()) {
@@ -63,7 +70,17 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
 @Composable
 fun CryptoItem(crypto: CryptoModel){
     val context = LocalContext.current
-    Row(Modifier.fillMaxWidth().clickable(onClick = {context.startActivity(Intent(context, BuySellActivity::class.java).putExtra("cryptoName", crypto.name))}), Arrangement.Start) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable(onClick = {
+                context.startActivity(
+                    Intent(
+                        context,
+                        BuySellActivity::class.java
+                    ).putExtra("cryptoName", crypto.name)
+                )
+            }), Arrangement.Start) {
         crypto.picture?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "",
             Modifier
                 .size(32.dp)
@@ -82,6 +99,6 @@ fun CryptoItem(crypto: CryptoModel){
 @Composable
 fun DefaultPreview() {
     CryptoProjectJetpackComposeTheme {
-        StartScreen()
+        InitStartScreen()
     }
 }
