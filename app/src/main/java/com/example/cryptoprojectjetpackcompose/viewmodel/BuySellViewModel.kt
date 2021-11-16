@@ -1,3 +1,4 @@
+/*
 package com.example.cryptoprojectjetpackcompose.viewmodel
 
 import android.graphics.BitmapFactory
@@ -60,14 +61,16 @@ class BuySellViewModel: ViewModel() {
 
 
 
-    private val _user = mutableStateOf(listOf<UserModel>())
+    */
+/*private val _user = mutableStateOf(listOf<UserModel>())
     val user = _user
 
     fun getUser(){
         viewModelScope.launch {
             _user.value = listOf(ServiceLocator.getUserRepository().getUser())
         }
-    }
+    }*//*
+
 
 
     private val _cryptoPrices = mutableStateOf(listOf<DataPoint>())
@@ -86,36 +89,4 @@ class BuySellViewModel: ViewModel() {
         }
     }
 
-    fun buyCrypto(crypto: CryptoModel, payment: Double){
-        if (payment > user.component1()[0].balance) return
-        viewModelScope.launch {
-            val transaction = TransactionModel(cryptoName = crypto.name, volume = (payment / crypto.priceUsd), price = payment, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.BOUGHT)
-            ServiceLocator.getDBRoom().transactionDao().insertTransaction(transaction.toEntity())
-
-            user.component1()[0].balance -= payment
-            user.component1()[0].currentCryptos.add(crypto)
-
-
-            ServiceLocator.getUserRepository().updateUser(user.component1()[0])
-
-        }
-    }
-
-
-    fun sellCrypto(crypto: CryptoModel, amount: Double){
-        if (amount > user.component1()[0].currentCryptos.elementAt(user.component1()[0].currentCryptos.indexOf(crypto)).supply){
-            viewModelScope.launch {
-                val transaction = TransactionModel(cryptoName = crypto.name, volume = amount, price = crypto.priceUsd*amount, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.SOLD)
-                ServiceLocator.getDBRoom().transactionDao().insertTransaction(transaction.toEntity())
-
-                user.component1()[0].balance += amount*crypto.priceUsd
-                // If the user has sold all the crypto
-                if (amount == user.component1()[0].currentCryptos.elementAt(user.component1()[0].currentCryptos.indexOf(crypto)).supply){
-                    user.component1()[0].currentCryptos.remove(crypto)
-                }
-                ServiceLocator.getUserRepository().updateUser(user.component1()[0])
-            }
-        }
-    }
-
-}
+}*/

@@ -2,6 +2,7 @@ package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -19,61 +20,81 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.BuySellViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.lifecycle.MutableLiveData
+import com.example.cryptoprojectjetpackcompose.ServiceLocator
+import com.example.cryptoprojectjetpackcompose.viewmodel.CryptoViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.UserViewModel
+import java.util.*
 
 class BuyCryptoActivity : ComponentActivity() {
+    private val screenState = MutableLiveData("")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CryptoProjectJetpackComposeTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
+                    // Have a screen state so that the view will update when it gets into foreground
+                    val state = screenState.observeAsState()
+                    Log.d("EXAMPLE", "Recomposing screen - ${state.value}")
                     InitBuyScreen()
                 }
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Save the time as the state so that it will always be different
+        screenState.value = Date().toString()
+    }
 }
 
 @Composable
-fun InitBuyScreen(viewModel: BuySellViewModel = BuySellViewModel()){
+fun InitBuyScreen(userViewModel: UserViewModel = ServiceLocator.getUserViewModelSL(),
+                  cryptoViewModel: CryptoViewModel = ServiceLocator.getCryptoViewModelSL()){
+    // TODO Figure if this code is redundant since we already loaded the data last activity
     // Get the crypto to be bought from the intent
     val context = LocalContext.current
     val intent = (context as Activity).intent
     val crypto = intent.getSerializableExtra("crypto") as CryptoModel
 
     // Get the data from the viewmodel
-    viewModel.getCrypto(crypto.name)
-    viewModel.getUser()
+    cryptoViewModel.getSingleCrypto(crypto.name)
 
-    BuyCryptoScreen(viewModel = viewModel)
+    BuyCryptoScreen(userViewModel, cryptoViewModel)
 }
 
 
 @Composable
-fun BuyCryptoScreen(viewModel: BuySellViewModel){
+fun BuyCryptoScreen(userViewModel: UserViewModel,
+                    cryptoViewModel: CryptoViewModel){
     // set up observers for necessary data
-    val cryptoObserver = viewModel.crypto
-    val user = viewModel.user
+    val cryptoList = cryptoViewModel.cryptoList
+    val user = userViewModel.user
 
-    CryptoBuyer(crypto = cryptoObserver.component1(), user = user.component1(), viewModel)
+    CryptoBuyer(cryptoList = cryptoList.value, user = listOf(user.value), userViewModel = userViewModel)
 }
 
+// Whole layout for the activity
 @Composable
-fun CryptoBuyer(crypto: List<CryptoModel>, user: List<UserModel>, viewModel: BuySellViewModel){
+fun CryptoBuyer(cryptoList: List<CryptoModel>, user: List<UserModel>, userViewModel: UserViewModel){
     LazyColumn(
         Modifier
             .fillMaxSize(1f)
             .padding(top = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top){
-        items(crypto){ item ->
-            CryptoBuyerSellerItem(crypto = item)
+        items(cryptoList){ item ->
+            // same top bar as the previous activity
+            CryptoBuyerSellerTopBar(crypto = item)
         }
-        items(crypto){ item ->
-            CryptoBuyerMiddle(crypto = item, viewModel)
+        items(cryptoList){ item ->
+            CryptoBuyerMiddle(crypto = item, userViewModel = userViewModel)
         }
         items(user){ item ->
             CryptoBuyerUserInfo(user = item)
@@ -81,15 +102,17 @@ fun CryptoBuyer(crypto: List<CryptoModel>, user: List<UserModel>, viewModel: Buy
     }
 }
 
-
+// This part includes the input field for the amount of dollar the user wants to buy for, the textfield where the dollars converted to crypto is and the buy button
 @Composable
-fun CryptoBuyerMiddle(crypto: CryptoModel, viewModel: BuySellViewModel){
+fun CryptoBuyerMiddle(crypto: CryptoModel, userViewModel: UserViewModel){
     Column() {
+        // A remember state of the input text
         var usdText by rememberSaveable {
             mutableStateOf("")
         }
         Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.SpaceEvenly) {
             Text(text = "USD")
+            // Make the input field only accept numbers
             TextField(value = usdText, onValueChange = {usdText = it}, Modifier.padding(start = 10.dp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
 
         }
@@ -97,8 +120,9 @@ fun CryptoBuyerMiddle(crypto: CryptoModel, viewModel: BuySellViewModel){
             Text(text = crypto.symbol)
             Text(text = "%.3f".format((if (usdText == "") 0.0 else usdText.toDouble()) / crypto.priceUsd), Modifier.padding(start = 10.dp))
         }
-        Button(onClick = { viewModel.buyCrypto(crypto,if (usdText == "") 0.0 else usdText.toDouble())},
-            Modifier
+        // The button should not be enabled when the usd text is empty
+        Button(onClick = { userViewModel.buyCrypto(crypto, usdText.toDouble())}, enabled = usdText != "",
+            modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth(.7f)) {
             Text(text = "Buy")

@@ -6,6 +6,8 @@ import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCrypto
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCryptoPic
 import com.example.cryptoprojectjetpackcompose.web.dto.CryptoPriceDto
+import retrofit2.HttpException
+import java.io.IOException
 
 class CryptoRepository(
     private val dbRoom: DBRoom,
@@ -24,12 +26,15 @@ class CryptoRepository(
         dbRoom.cryptoDao().insertCrypto(dbModel)
     }
 
-    // get all cryptos from the api and insert into the database
+    // get all cryptos from the api and insert into the database'
+    // TODO hent fra DB først
     suspend fun getCryptos(): MutableList<CryptoModel>{
         try{
+            // receive the cryptos from the API
             val list = retrofitClient.getCryptos().data
             val result = mutableListOf<CryptoModel>()
 
+            // Make all DTO into entities for DB and models for view
             for (dto in list){
                 val model = dto.toModel()
                 val dbModel = model.toEntity()
@@ -37,7 +42,11 @@ class CryptoRepository(
                 result.add(model)
             }
             return result
-        } catch (e: Exception){
+        } catch (e: HttpException){
+            Log.d("CryptoError", "HttpException: Http request didn't respond with 200 (OK)!!")
+            Log.d("CryptoError", e.message!!)
+        } catch (e: IOException){
+            Log.d("CryptoError", "IOException: Network Error!!")
             Log.d("CryptoError", e.message!!)
         }
         return mutableListOf()
@@ -48,7 +57,11 @@ class CryptoRepository(
         try{
             Log.d("CryptoPrices", "getCryptoPrices: Getting crypto prices with id=$id")
             return retrofitClient.getCryptoPrices(id).data
-        } catch (e: Exception){
+        } catch (e: HttpException){
+            Log.d("CryptoError", "HttpException: Http request didn't respond with 200 (OK)!!")
+            Log.d("CryptoError", e.message!!)
+        } catch (e: IOException){
+            Log.d("CryptoError", "IOException: Network Error!!")
             Log.d("CryptoError", e.message!!)
         }
         return listOf()

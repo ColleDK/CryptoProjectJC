@@ -1,6 +1,7 @@
 package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -17,61 +18,79 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.MutableLiveData
+import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.StartViewModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.UserInfoViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.CryptoViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.UserViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
+import java.util.*
 
 class UserInfoActivity : ComponentActivity() {
+    private val screenState = MutableLiveData("")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CryptoProjectJetpackComposeTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    PortfolioScreen()
+                    // Have a screen state so that the view will update when it gets into foreground
+                    val state = screenState.observeAsState()
+                    Log.d("EXAMPLE", "Recomposing screen - ${state.value}")
+                    InitPortfolioScreen()
                 }
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Save the time as the state so that it will always be different
+        screenState.value = Date().toString()
+    }
 }
 
 @Composable
-fun PortfolioScreen(viewModel: StartViewModel = StartViewModel(), viewModelUserInfo: UserInfoViewModel = UserInfoViewModel()){
-    val user = viewModel.user.observeAsState()
-    val cryptoList = viewModelUserInfo.cryptoListInfo
+fun InitPortfolioScreen(userViewModel: UserViewModel = ServiceLocator.getUserViewModelSL(),
+                        cryptoViewModel: CryptoViewModel = ServiceLocator.getCryptoViewModelSL()){
+    //cryptoViewModel.getListOfCryptos()
+    PortfolioScreen(userViewModel = userViewModel, cryptoViewModel = cryptoViewModel)
+}
 
-    viewModel.getUser()
+@Composable
+fun PortfolioScreen(userViewModel: UserViewModel,
+                    cryptoViewModel: CryptoViewModel){
+    val user = userViewModel.user
+    val cryptoList = cryptoViewModel.cryptoList
 
-    user.value?.let { it -> PortfolioList(user = it, cryptoListState = cryptoList.value, viewModelUserInfo) }
+    PortfolioList(user = user.value, cryptoList = cryptoList.value)
 }
 
 
 
 @Composable
-fun PortfolioList(user: UserModel, cryptoListState: List<CryptoModel>, viewModelUserInfo: UserInfoViewModel){
+fun PortfolioList(user: UserModel, cryptoList: List<CryptoModel>){
     val context = LocalContext.current
-    viewModelUserInfo.getUserCryptoPics(user.currentCryptos.toList())
     Column() {
         Row(Modifier.fillMaxWidth()) {
-            Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)) {
+            Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent), enabled = false) {
                 Text(text = "Points: " + user.balance.toString() + " USD", textAlign = TextAlign.Center)
             }
         }
         Row(Modifier.fillMaxWidth()) {
-            Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)) {
+            Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent), enabled = false) {
                 Text(text = "Your total current points are the sum of current value of all your currencies in USD", textAlign = TextAlign.Center)
             }
         }
         Row(Modifier.fillMaxWidth()) {
-            Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)) {
+            Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent), enabled = false) {
                 Text(text = "My Portfolio", textAlign = TextAlign.Center)
             }
         }
-
         LazyColumn(Modifier.fillMaxSize(1f)){
-            items(cryptoListState){ item ->
+            items(cryptoList){ item ->
                 CryptoItem(crypto = item)
             }
         }
@@ -82,6 +101,6 @@ fun PortfolioList(user: UserModel, cryptoListState: List<CryptoModel>, viewModel
 @Composable
 fun DefaultPreview2() {
     CryptoProjectJetpackComposeTheme {
-        PortfolioScreen()
+        InitPortfolioScreen()
     }
 }

@@ -1,3 +1,4 @@
+/*
 package com.example.cryptoprojectjetpackcompose.viewmodel
 
 import android.graphics.BitmapFactory
@@ -62,4 +63,4 @@ class StartViewModel: ViewModel() {
         }
     }
 
-}
+}*/

@@ -5,6 +5,8 @@ import android.preference.PreferenceManager
 import com.example.cryptoprojectjetpackcompose.db.DBRoom
 import com.example.cryptoprojectjetpackcompose.repository.CryptoRepository
 import com.example.cryptoprojectjetpackcompose.repository.UserRepository
+import com.example.cryptoprojectjetpackcompose.viewmodel.CryptoViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.UserViewModel
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCrypto
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCryptoPic
 import com.google.gson.GsonBuilder
@@ -55,11 +57,20 @@ object ServiceLocator {
         )
     }
 
+    private val userViewModel by lazy {
+        UserViewModel()
+    }
+
+    private val cryptoViewModel by lazy {
+        CryptoViewModel()
+    }
+
 
     fun getDBRoom() = this.dbRoom
     fun getRetrofitClient() = this.retrofit
     fun getRetrofitClientPic() = this.retrofitPic
     fun getCryptoRepository() = this.cryptoRepo
     fun getUserRepository() = this.userRepo
-
+    fun getUserViewModelSL() = this.userViewModel
+    fun getCryptoViewModelSL() = this.cryptoViewModel
 }

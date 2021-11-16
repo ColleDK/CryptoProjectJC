@@ -2,6 +2,7 @@ package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,34 +22,57 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.MutableLiveData
+import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.CryptoViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
-import com.example.cryptoprojectjetpackcompose.viewmodel.StartViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.UserViewModel
+import java.util.*
 
 class MainActivity : ComponentActivity() {
+    private val screenState = MutableLiveData("")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { InitStartScreen() }
+        /*val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        prefs.edit().putBoolean("instantiated", false).apply()*/
+        setContent {
+            // Have a screen state so that the view will update when it gets into foreground
+            val state = screenState.observeAsState()
+            Log.d("Screen state", "Recomposing screen - ${state.value}")
+            InitStartScreen()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Save the time as the state so that it will always be different
+        screenState.value = Date().toString()
     }
 }
 
 // Initialize the screen with the data we want to get
 @Composable
-fun InitStartScreen(viewModel: StartViewModel = StartViewModel()){
-    viewModel.getCryptos()
-    viewModel.getUser()
-    StartScreen(viewModel)
+fun InitStartScreen(userViewModel: UserViewModel = ServiceLocator.getUserViewModelSL(),
+                    cryptoViewModel: CryptoViewModel = ServiceLocator.getCryptoViewModelSL()){
+    // Get the data for the cryptos and the user
+    Log.d("Screen state", "Init start screen")
+    cryptoViewModel.getCryptos()
+    userViewModel.getUser()
+    StartScreen(userViewModel, cryptoViewModel)
 }
 
 
 // Set the observers and create the list of cryptos
 @Composable
-fun StartScreen(viewModel: StartViewModel){
-    val list = viewModel.cryptoList.observeAsState()
-    val user = viewModel.user.observeAsState()
+fun StartScreen(userViewModel: UserViewModel,
+                cryptoViewModel: CryptoViewModel){
+    val cryptoList = cryptoViewModel.cryptoList
+    val user = userViewModel.user
 
-    list.value?.let { user.value?.let { it1 -> CryptoList(cryptoList = it, user = it1) } }
+    CryptoList(cryptoList = cryptoList.value, user = user.value)
 }
 
 @Composable
