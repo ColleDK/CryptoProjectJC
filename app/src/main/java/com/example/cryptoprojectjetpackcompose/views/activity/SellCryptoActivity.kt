@@ -103,19 +103,19 @@ fun CryptoSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, userViewM
 @Composable
 fun CryptoSellerMiddle(crypto: CryptoModel, userViewModel: UserViewModel){
     Column() {
-        var usdText by rememberSaveable {
+        var cryptoAmount by rememberSaveable {
             mutableStateOf("")
         }
         Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "USD")
-            TextField(value = usdText, onValueChange = {usdText = it}, Modifier.padding(start = 10.dp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+            Text(text = crypto.symbol)
+            TextField(value = cryptoAmount, onValueChange = {cryptoAmount = it}, Modifier.padding(start = 10.dp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
 
         }
         Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = crypto.symbol)
-            Text(text = "%.3f".format((if (usdText == "") 0.0 else usdText.toDouble()) / crypto.priceUsd), Modifier.padding(start = 10.dp))
+            Text(text = "USD")
+            Text(text = "%.3f".format((if (cryptoAmount == "") 0.0 else cryptoAmount.toDouble()) * crypto.priceUsd), Modifier.padding(start = 10.dp))
         }
-        Button(onClick = { userViewModel.sellCrypto(crypto,usdText.toDouble())}, enabled = usdText != "",
+        Button(onClick = { userViewModel.sellCrypto(crypto,cryptoAmount.toDouble())}, enabled = (cryptoAmount != ""),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth(.7f)) {
