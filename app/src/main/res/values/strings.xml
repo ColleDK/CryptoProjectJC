@@ -4,4 +4,5 @@
     <string name="title_activity_buy_sell">BuySellActivity</string>
     <string name="title_activity_buy_crypto">BuyCryptoActivity</string>
     <string name="title_activity_sell_crypto">SellCryptoActivity</string>
+    <string name="title_activity_transaction">TransactionActivity</string>
 </resources>

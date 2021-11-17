@@ -15,6 +15,9 @@ interface OwnedCryptoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOwnedCrypto(vararg crypto: OwnedCryptoEntity)
 
+    @Query("UPDATE OwnedCryptoEntity SET volume = :volume WHERE cryptoName = :cryptoName")
+    suspend fun updateOwnedCrypto(cryptoName: String, volume: Double)
+
     @Delete
     suspend fun deleteOwnedCrypto(crypto: OwnedCryptoEntity)
 }
