@@ -1,11 +1,8 @@
-/*
 package com.example.cryptoprojectjetpackcompose.viewmodel
 
 import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.compose.ui.text.toLowerCase
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
@@ -16,22 +13,29 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 
-class StartViewModel: ViewModel() {
+class MainViewModel: ViewModel() {
+    private val _user = mutableStateOf(UserModel(10000.0, mutableSetOf(), mutableListOf()))
+    val user = _user
 
-    private val _cryptoList = MutableLiveData<MutableList<CryptoModel>>()
-    val cryptoList: LiveData<MutableList<CryptoModel>> = _cryptoList
-
-    fun getCryptos(){
+    fun getUser(){
         viewModelScope.launch {
-            _cryptoList.value = ServiceLocator.getCryptoRepository().getCryptos()
-            for(crypto in _cryptoList.value!!){
-                getCryptoPics(crypto)
-            }
+            _user.value = ServiceLocator.getUserRepository().getUser()
         }
     }
 
 
-    fun getCryptoPics(crypto: CryptoModel){
+    private val _cryptoList = mutableStateOf(mutableListOf<CryptoModel>())
+    val cryptoList = _cryptoList
+
+    fun getCryptos(){
+        viewModelScope.launch {
+            _cryptoList.value = ServiceLocator.getCryptoRepository().getCryptos()
+            _cryptoList.value.forEach { getCryptoPic(it) }
+        }
+    }
+
+    // TODO Retry when failure
+    fun getCryptoPic(crypto: CryptoModel){
         viewModelScope.launch {
             ServiceLocator.getRetrofitClientPic().getCryptoPic(crypto.symbol.toLowerCase()).enqueue(object: retrofit2.Callback<ResponseBody>{
                 override fun onResponse(
@@ -39,9 +43,10 @@ class StartViewModel: ViewModel() {
                     response: Response<ResponseBody>
                 ) {
                     if (response.isSuccessful){
+                        // If successful we override the current list with the new one
                         Log.d("CryptoPicture", "onResponse: success ${crypto.name}")
                         val current = _cryptoList.value
-                        val replacement = current?.map { if (it == crypto) it.copy(picture = BitmapFactory.decodeStream(response.body()?.byteStream())) else it } as MutableList<CryptoModel>
+                        val replacement = current.map { if (it == crypto) it.copy(picture = BitmapFactory.decodeStream(response.body()?.byteStream())) else it } as MutableList<CryptoModel>
                         _cryptoList.value = replacement
                     }
                 }
@@ -54,13 +59,5 @@ class StartViewModel: ViewModel() {
     }
 
 
-    private val _user = MutableLiveData<UserModel>()
-    val user: LiveData<UserModel> = _user
 
-    fun getUser(){
-        viewModelScope.launch {
-            _user.value = ServiceLocator.getUserRepository().getUser()
-        }
-    }
-
-}*/
+}

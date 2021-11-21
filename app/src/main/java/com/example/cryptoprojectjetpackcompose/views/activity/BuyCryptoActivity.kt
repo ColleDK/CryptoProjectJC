@@ -27,8 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.MutableLiveData
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
-import com.example.cryptoprojectjetpackcompose.viewmodel.CryptoViewModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.UserViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.BuyCryptoViewModel
+
 import java.util.*
 
 class BuyCryptoActivity : ComponentActivity() {
@@ -57,8 +57,7 @@ class BuyCryptoActivity : ComponentActivity() {
 }
 
 @Composable
-fun InitBuyScreen(userViewModel: UserViewModel = ServiceLocator.getUserViewModelSL(),
-                  cryptoViewModel: CryptoViewModel = ServiceLocator.getCryptoViewModelSL()){
+fun InitBuyScreen(buyCryptoViewModel: BuyCryptoViewModel = ServiceLocator.getBuyCryptoViewModelSL()){
     // TODO Figure if this code is redundant since we already loaded the data last activity
     // Get the crypto to be bought from the intent
     val context = LocalContext.current
@@ -66,25 +65,25 @@ fun InitBuyScreen(userViewModel: UserViewModel = ServiceLocator.getUserViewModel
     val crypto = intent.getSerializableExtra("crypto") as CryptoModel
 
     // Get the data from the viewmodel
-    cryptoViewModel.getSingleCrypto(crypto.name)
+    buyCryptoViewModel.getCrypto(crypto.name)
+    buyCryptoViewModel.getUser()
 
-    BuyCryptoScreen(userViewModel, cryptoViewModel)
+    BuyCryptoScreen(buyCryptoViewModel)
 }
 
 
 @Composable
-fun BuyCryptoScreen(userViewModel: UserViewModel,
-                    cryptoViewModel: CryptoViewModel){
+fun BuyCryptoScreen(buyCryptoViewModel: BuyCryptoViewModel){
     // set up observers for necessary data
-    val cryptoList = cryptoViewModel.cryptoList
-    val user = userViewModel.user
+    val cryptoList = buyCryptoViewModel.crypto
+    val user = buyCryptoViewModel.user
 
-    CryptoBuyer(cryptoList = cryptoList.value, user = listOf(user.value), userViewModel = userViewModel)
+    CryptoBuyer(cryptoList = listOf(cryptoList.value), user = listOf(user.value), buyCryptoViewModel = buyCryptoViewModel)
 }
 
 // Whole layout for the activity
 @Composable
-fun CryptoBuyer(cryptoList: List<CryptoModel>, user: List<UserModel>, userViewModel: UserViewModel){
+fun CryptoBuyer(cryptoList: List<CryptoModel>, user: List<UserModel>, buyCryptoViewModel: BuyCryptoViewModel){
     LazyColumn(
         Modifier
             .fillMaxSize(1f)
@@ -94,7 +93,7 @@ fun CryptoBuyer(cryptoList: List<CryptoModel>, user: List<UserModel>, userViewMo
             CryptoBuyerSellerTopBar(crypto = item)
         }
         items(cryptoList){ item ->
-            CryptoBuyerMiddle(crypto = item, userViewModel = userViewModel)
+            CryptoBuyerMiddle(crypto = item, buyCryptoViewModel = buyCryptoViewModel)
         }
         items(user){ item ->
             CryptoBuyerUserInfo(user = item)
@@ -104,7 +103,7 @@ fun CryptoBuyer(cryptoList: List<CryptoModel>, user: List<UserModel>, userViewMo
 
 // This part includes the input field for the amount of dollar the user wants to buy for, the textfield where the dollars converted to crypto is and the buy button
 @Composable
-fun CryptoBuyerMiddle(crypto: CryptoModel, userViewModel: UserViewModel){
+fun CryptoBuyerMiddle(crypto: CryptoModel, buyCryptoViewModel: BuyCryptoViewModel){
     Column() {
         // A remember state of the input text
         var usdText by rememberSaveable {
@@ -121,7 +120,7 @@ fun CryptoBuyerMiddle(crypto: CryptoModel, userViewModel: UserViewModel){
             Text(text = "%.3f".format((if (usdText == "") 0.0 else usdText.toDouble()) / crypto.priceUsd), Modifier.padding(start = 10.dp))
         }
         // The button should not be enabled when the usd text is empty
-        Button(onClick = { userViewModel.buyCrypto(crypto, usdText.toDouble())}, enabled = usdText != "",
+        Button(onClick = { buyCryptoViewModel.buyCrypto(crypto, usdText.toDouble())}, enabled = usdText != "",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth(.7f)) {

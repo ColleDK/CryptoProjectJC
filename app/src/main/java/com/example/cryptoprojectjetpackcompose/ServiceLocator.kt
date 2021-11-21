@@ -4,9 +4,10 @@ import android.content.Context
 import android.preference.PreferenceManager
 import com.example.cryptoprojectjetpackcompose.db.DBRoom
 import com.example.cryptoprojectjetpackcompose.repository.CryptoRepository
+import com.example.cryptoprojectjetpackcompose.repository.OwnedCryptoRepository
+import com.example.cryptoprojectjetpackcompose.repository.TransactionRepository
 import com.example.cryptoprojectjetpackcompose.repository.UserRepository
-import com.example.cryptoprojectjetpackcompose.viewmodel.CryptoViewModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.UserViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.*
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCrypto
 import com.example.cryptoprojectjetpackcompose.web.WebServiceCryptoPic
 import com.google.gson.GsonBuilder
@@ -46,31 +47,82 @@ object ServiceLocator {
     }
 
     private val cryptoRepo by lazy {
-        CryptoRepository(dbRoom,
-                        retrofit)
+        CryptoRepository(getDBRoom(),
+                        getRetrofitClient())
     }
 
     private val userRepo by lazy {
         UserRepository(
-            dbRoom,
-            PreferenceManager.getDefaultSharedPreferences(applicationContext)
+            getDBRoom(),
+            PreferenceManager.getDefaultSharedPreferences(applicationContext),
+            transactionRepository = getTransactionRepository(),
+            ownedCryptoRepository = getOwnedCryptoRepository()
         )
     }
 
-    private val userViewModel by lazy {
+    private val ownedCryptoRepo by lazy {
+        OwnedCryptoRepository(
+            dbRoom = getDBRoom()
+        )
+    }
+
+    private val transactionRepo by lazy {
+        TransactionRepository(
+            dbRoom = getDBRoom()
+        )
+    }
+
+    private val mainViewModel by lazy {
+        MainViewModel()
+    }
+
+    private val buySellViewModel by lazy {
+        BuySellViewModel()
+    }
+
+    private val buyCryptoViewModel by lazy {
+        BuyCryptoViewModel()
+    }
+
+    private val sellCryptoViewModel by lazy {
+        SellCryptoViewModel()
+    }
+
+    private val userInfoViewModel by lazy {
+        UserInfoViewModel()
+    }
+
+    /*private val userViewModel by lazy {
         UserViewModel()
     }
 
     private val cryptoViewModel by lazy {
         CryptoViewModel()
-    }
+    }*/
 
 
+
+
+    // Database
     fun getDBRoom() = this.dbRoom
+
+    // Retrofit
     fun getRetrofitClient() = this.retrofit
     fun getRetrofitClientPic() = this.retrofitPic
+
+    // Repositories
     fun getCryptoRepository() = this.cryptoRepo
     fun getUserRepository() = this.userRepo
-    fun getUserViewModelSL() = this.userViewModel
-    fun getCryptoViewModelSL() = this.cryptoViewModel
+    fun getTransactionRepository() = this.transactionRepo
+    fun getOwnedCryptoRepository() = this.ownedCryptoRepo
+
+    // Viewmodels
+    fun getMainViewModelSL() = this.mainViewModel
+    fun getBuySellViewModelSL() = this.buySellViewModel
+    fun getBuyCryptoViewModelSL() = this.buyCryptoViewModel
+    fun getSellCryptoViewModelSL() = this.sellCryptoViewModel
+    fun getUserInfoViewModelSL() = this.userInfoViewModel
+
+    /*fun getUserViewModelSL() = this.userViewModel
+    fun getCryptoViewModelSL() = this.cryptoViewModel*/
 }

@@ -12,7 +12,9 @@ import java.util.*
 
 class UserRepository(
     private val dbRoom: DBRoom,
-    private val prefs: SharedPreferences
+    private val prefs: SharedPreferences,
+    private val transactionRepository: TransactionRepository,
+    private val ownedCryptoRepository: OwnedCryptoRepository
 ) {
 
     suspend fun getUser(): UserModel {
@@ -30,14 +32,8 @@ class UserRepository(
         Log.e("CurrentUser", userModel.toString())
 
         // Retrieve the transactions and owned cryptos and insert into the model
-        val transactions = dbRoom.transactionDao().getTransactions()
-        val ownedCryptos = dbRoom.ownedCryptoDao().getOwnedCryptos()
-
-        val transactionSet = mutableListOf<TransactionModel>()
-        transactions.forEach { transactionSet.add(it.toModel()) }
-
-        val ownedCryptoSet = mutableSetOf<OwnedCryptoModel>()
-        ownedCryptos.forEach { ownedCryptoSet.add(it.toModel()) }
+        val transactionSet = transactionRepository.getTransactions()
+        val ownedCryptoSet = ownedCryptoRepository.getOwnedCryptos().toMutableSet()
 
         userModel.currentCryptos = ownedCryptoSet
         userModel.transactions = transactionSet

@@ -30,8 +30,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.CryptoViewModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.UserViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.BuySellViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
 import com.madrapps.plot.line.DataPoint
 import com.madrapps.plot.line.LineGraph
@@ -64,27 +63,27 @@ class BuySellActivity : ComponentActivity() {
 }
 
 @Composable
-fun InitBuySellScreen(userViewModel: UserViewModel = ServiceLocator.getUserViewModelSL(),
-                      cryptoViewModel: CryptoViewModel = ServiceLocator.getCryptoViewModelSL()){
+fun InitBuySellScreen(buySellViewModel: BuySellViewModel = ServiceLocator.getBuySellViewModelSL()){
     // Get the crypto that needs to be showed
     val context = LocalContext.current
     val intent = (context as Activity).intent
     val cryptoName = intent.getStringExtra("cryptoName")
 
     // Get the crypto we want to observe
-    cryptoViewModel.getSingleCrypto(cryptoName!!)
-    BuySellScreen(userViewModel, cryptoViewModel)
+    cryptoName?.let { buySellViewModel.getCrypto(it) }
+    buySellViewModel.getUser()
+
+    BuySellScreen(buySellViewModel)
 }
 
 @Composable
-fun BuySellScreen(userViewModel: UserViewModel,
-                  cryptoViewModel: CryptoViewModel){
+fun BuySellScreen(buySellViewModel: BuySellViewModel){
     // set up observers for necessary data
-    val cryptoList = cryptoViewModel.cryptoList
-    val cryptoPrices = cryptoViewModel.cryptoPrices
-    val user = userViewModel.user
+    val crypto = buySellViewModel.crypto
+    val cryptoPrices = buySellViewModel.cryptoPrices
+    val user = buySellViewModel.user
 
-    CryptoBuyerSeller(cryptoList = cryptoList.value, listOf(user.value), listOf(cryptoPrices.value))
+    CryptoBuyerSeller(cryptoList = listOf(crypto.value), listOf(user.value), listOf(cryptoPrices.value))
 }
 
 // The whole activity composable

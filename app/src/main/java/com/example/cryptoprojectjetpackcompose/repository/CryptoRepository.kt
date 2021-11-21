@@ -15,8 +15,8 @@ class CryptoRepository(
 ) {
 
     // get a single crypto from the database
-    suspend fun getCrypto(id: String): CryptoModel{
-        return dbRoom.cryptoDao().getCrypto(id).toModel()
+    suspend fun getCrypto(name: String): CryptoModel{
+        return dbRoom.cryptoDao().getCrypto(name).toModel()
     }
 
     // get a single crypto from the api and insert into the database

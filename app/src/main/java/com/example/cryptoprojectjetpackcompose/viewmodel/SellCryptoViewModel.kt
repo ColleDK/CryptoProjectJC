@@ -6,15 +6,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
+import com.example.cryptoprojectjetpackcompose.db.entity.TransactionEntity
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
+import com.example.cryptoprojectjetpackcompose.model.TransactionModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
-import com.madrapps.plot.line.DataPoint
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
+import java.util.*
 
-class BuySellViewModel: ViewModel() {
+class SellCryptoViewModel: ViewModel() {
     private val _user = mutableStateOf(UserModel(10000.0, mutableSetOf(), mutableListOf()))
     val user = _user
 
@@ -27,14 +29,10 @@ class BuySellViewModel: ViewModel() {
     private val _crypto = mutableStateOf(CryptoModel("","",0.0,0.0,0.0,null))
     val crypto = _crypto
 
-    private val _cryptoPrices = mutableStateOf(mutableListOf<DataPoint>())
-    val cryptoPrices = _cryptoPrices
-
     fun getCrypto(name: String){
         viewModelScope.launch {
             _crypto.value = ServiceLocator.getCryptoRepository().getCrypto(name)
             getCryptoPic(_crypto.value)
-            getCryptoPrices(_crypto.value.name)
         }
     }
 
@@ -61,21 +59,36 @@ class BuySellViewModel: ViewModel() {
         }
     }
 
-    fun getCryptoPrices(name: String){
+    fun sellCrypto(crypto: CryptoModel, amount: Double){
+        // If negative amount
+        if (amount < 0.0) return
+        // If the user does not own the crypto return
+        if (_user.value.currentCryptos.find { it.cryptoName == crypto.name } == null) return
+        // If the amount is more than the owned volume
+        if (_user.value.currentCryptos.find { it.cryptoName == crypto.name }!!.volume < amount) return
+
         viewModelScope.launch {
-            // Replace spaces with a hyphen
-            val result = ServiceLocator.getCryptoRepository().getCryptoPrices(name.toLowerCase().replace(' ','-'))
-            val newList = mutableListOf<DataPoint>()
+            val price = amount * crypto.priceUsd
 
-            result.forEachIndexed{index, element ->
-                newList.add(DataPoint(index.toFloat(), element.priceUsd.toFloat()))
-            }
+            // Create a transaction
+            val newTransaction = TransactionModel(cryptoName = crypto.name, volume = amount, price = price, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.SOLD)
+            // Insert the transaction to the database
+            ServiceLocator.getTransactionRepository().addTransaction(newTransaction)
+            // Add the transaction to the user
+            _user.value.transactions.plus(newTransaction)
 
-            _cryptoPrices.value = newList
+            // Update the cryptos volume on the user
+            _user.value.currentCryptos.find { it.cryptoName == crypto.name }!!.volume -= amount
+            ServiceLocator.getOwnedCryptoRepository().updateOwnedCrypto(name = crypto.name, volume = _user.value.currentCryptos.find { it.cryptoName == crypto.name }!!.volume)
 
+            // Update the user balance
+            _user.value.balance += price
+            ServiceLocator.getUserRepository().updateUser(_user.value)
+
+            // Override the old value of the user
+            val current = _user.value
+            _user.value = current
         }
     }
-
-
 
 }

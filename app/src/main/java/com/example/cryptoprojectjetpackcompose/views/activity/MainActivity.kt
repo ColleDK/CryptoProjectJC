@@ -2,7 +2,6 @@ package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,9 +25,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.CryptoViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.MainViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
-import com.example.cryptoprojectjetpackcompose.viewmodel.UserViewModel
 import java.util.*
 
 class MainActivity : ComponentActivity() {
@@ -55,22 +53,20 @@ class MainActivity : ComponentActivity() {
 
 // Initialize the screen with the data we want to get
 @Composable
-fun InitStartScreen(userViewModel: UserViewModel = ServiceLocator.getUserViewModelSL(),
-                    cryptoViewModel: CryptoViewModel = ServiceLocator.getCryptoViewModelSL()){
+fun InitStartScreen(mainViewModel: MainViewModel = ServiceLocator.getMainViewModelSL()){
     // Get the data for the cryptos and the user
     Log.d("Screen state", "Init start screen")
-    cryptoViewModel.getCryptos()
-    userViewModel.getUser()
-    StartScreen(userViewModel, cryptoViewModel)
+    mainViewModel.getCryptos()
+    mainViewModel.getUser()
+    StartScreen(mainViewModel)
 }
 
 
 // Set the observers and create the list of cryptos
 @Composable
-fun StartScreen(userViewModel: UserViewModel,
-                cryptoViewModel: CryptoViewModel){
-    val cryptoList = cryptoViewModel.cryptoList
-    val user = userViewModel.user
+fun StartScreen(mainViewModel: MainViewModel){
+    val cryptoList = mainViewModel.cryptoList
+    val user = mainViewModel.user
 
     CryptoList(cryptoList = cryptoList.value, user = user.value)
 }

@@ -19,15 +19,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.CryptoViewModel
-import com.example.cryptoprojectjetpackcompose.viewmodel.UserViewModel
+import com.example.cryptoprojectjetpackcompose.viewmodel.SellCryptoViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
 import java.util.*
 
@@ -57,31 +60,32 @@ class SellCryptoActivity : ComponentActivity() {
 }
 
 @Composable
-fun InitSellCryptoScreen(userViewModel: UserViewModel = ServiceLocator.getUserViewModelSL(),
-                         cryptoViewModel: CryptoViewModel = ServiceLocator.getCryptoViewModelSL()){
+fun InitSellCryptoScreen(sellCryptoViewModel: SellCryptoViewModel = ServiceLocator.getSellCryptoViewModelSL()){
     // TODO Check if code is redundant since we got the info from last activity
     val context = LocalContext.current
     val intent = (context as Activity).intent
     val crypto = intent.getSerializableExtra("crypto") as CryptoModel
 
-    cryptoViewModel.getSingleCrypto(crypto.name)
+    sellCryptoViewModel.getCrypto(crypto.name)
+    sellCryptoViewModel.getUser()
 
-    SellCryptoScreen(userViewModel, cryptoViewModel)
+    SellCryptoScreen(sellCryptoViewModel)
 }
 
 
 @Composable
-fun SellCryptoScreen(userViewModel: UserViewModel,
-                     cryptoViewModel: CryptoViewModel){
+fun SellCryptoScreen(sellCryptoViewModel: SellCryptoViewModel){
     // set up observers for necessary data
-    val cryptoList = cryptoViewModel.cryptoList
-    val user = userViewModel.user
+    val crypto = sellCryptoViewModel.crypto
+    val user = sellCryptoViewModel.user
 
-    CryptoSeller(cryptoList = cryptoList.value, user = listOf(user.value), userViewModel = userViewModel)
+    Log.d("SellScreen", "Recomposing screen with $crypto")
+
+    CryptoSeller(cryptoList = listOf(crypto.value), user = listOf(user.value), sellCryptoViewModel = sellCryptoViewModel)
 }
 
 @Composable
-fun CryptoSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, userViewModel: UserViewModel){
+fun CryptoSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, sellCryptoViewModel: SellCryptoViewModel){
     LazyColumn(
         Modifier
             .fillMaxSize(1f)
@@ -90,10 +94,10 @@ fun CryptoSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, userViewM
             CryptoBuyerSellerTopBar(crypto = item)
         }
         items(cryptoList){ item ->
-            CryptoSellerMiddle(crypto = item, userViewModel = userViewModel)
+            CryptoSellerMiddle(crypto = item, sellCryptoViewModel = sellCryptoViewModel)
         }
         items(user){ item ->
-            CryptoBuyerUserInfo(user = item)
+            CryptoSellerUserInfo(user = item, cryptoSymbol = cryptoList[0].symbol)
         }
     }
 }
@@ -101,7 +105,7 @@ fun CryptoSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, userViewM
 
 // TODO Probably change the USDTEXT with a cryptoAmount and reconfigure calculations
 @Composable
-fun CryptoSellerMiddle(crypto: CryptoModel, userViewModel: UserViewModel){
+fun CryptoSellerMiddle(crypto: CryptoModel, sellCryptoViewModel: SellCryptoViewModel){
     Column() {
         var cryptoAmount by rememberSaveable {
             mutableStateOf("")
@@ -115,13 +119,25 @@ fun CryptoSellerMiddle(crypto: CryptoModel, userViewModel: UserViewModel){
             Text(text = "USD")
             Text(text = "%.3f".format((if (cryptoAmount == "") 0.0 else cryptoAmount.toDouble()) * crypto.priceUsd), Modifier.padding(start = 10.dp))
         }
-        Button(onClick = { userViewModel.sellCrypto(crypto,cryptoAmount.toDouble())}, enabled = (cryptoAmount != ""),
+        Button(onClick = { sellCryptoViewModel.sellCrypto(crypto,cryptoAmount.toDouble())}, enabled = (cryptoAmount != ""),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth(.7f)) {
             Text(text = "Sell")
         }
     }
+}
+
+@Composable
+fun CryptoSellerUserInfo(user: UserModel, cryptoSymbol: String){
+    Text(text = buildAnnotatedString {
+        append("You can only sell cryptocurrency to USD\nYou have ")
+        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)){
+            append("${user.currentCryptos.find { it.cryptoSymbol == cryptoSymbol}?.volume}")
+        }
+        append(" $cryptoSymbol")
+    })
+
 }
 
 @Preview(showBackground = true)
