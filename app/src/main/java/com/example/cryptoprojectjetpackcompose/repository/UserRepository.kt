@@ -44,11 +44,11 @@ class UserRepository(
     suspend fun createUser(): UserModel{
         // Set the user balance to 10000 and add the initial transaction
         val user = UserEntity(balance = 10000.0)
-        val transaction = TransactionEntity(cryptoName = "", volume = 0.0, price = 10000.0, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.INSTALLATION)
+        val transaction = TransactionModel(cryptoName = "", cryptoSymbol = "", volume = 0.0, price = 10000.0, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.INSTALLATION)
 
         // Insert the user and transaction into the database
         dbRoom.userDao().insertUser(user)
-        dbRoom.transactionDao().insertTransaction(transaction)
+        transactionRepository.addTransaction(transaction)
 
         // Add the instantiated into the preference manager
         prefs.edit().putBoolean("instantiated", true).apply()

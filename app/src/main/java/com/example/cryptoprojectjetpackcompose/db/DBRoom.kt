@@ -13,7 +13,7 @@ import com.example.cryptoprojectjetpackcompose.db.entity.OwnedCryptoEntity
 import com.example.cryptoprojectjetpackcompose.db.entity.TransactionEntity
 import com.example.cryptoprojectjetpackcompose.db.entity.UserEntity
 
-@Database(entities = [CryptoEntity::class, TransactionEntity::class, UserEntity::class, OwnedCryptoEntity::class], version = 2, exportSchema = true)
+@Database(entities = [CryptoEntity::class, TransactionEntity::class, UserEntity::class, OwnedCryptoEntity::class], version = 3, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class DBRoom: RoomDatabase() {
     abstract fun cryptoDao(): CryptoDao
@@ -25,7 +25,7 @@ abstract class DBRoom: RoomDatabase() {
     companion object{
         fun build(context: Context): DBRoom{
             return Room.databaseBuilder(context, DBRoom::class.java, "cryptoDBJC")
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
         }
     }
@@ -37,6 +37,11 @@ abstract class DBRoom: RoomDatabase() {
         }
     }
 
+    object MIGRATION_2_3 : Migration(2,3){
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE TransactionEntity ADD COLUMN 'cryptoSymbol' TEXT NOT NULL DEFAULT ''")
+        }
+    }
 
 
 }

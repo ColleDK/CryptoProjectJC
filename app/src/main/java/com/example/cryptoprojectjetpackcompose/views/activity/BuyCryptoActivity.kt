@@ -113,14 +113,13 @@ fun CryptoBuyerMiddle(crypto: CryptoModel, buyCryptoViewModel: BuyCryptoViewMode
             Text(text = "USD")
             // Make the input field only accept numbers
             TextField(value = usdText, onValueChange = {usdText = it}, Modifier.padding(start = 10.dp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-
         }
         Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.SpaceEvenly) {
             Text(text = crypto.symbol)
             Text(text = "%.3f".format((if (usdText == "") 0.0 else usdText.toDouble()) / crypto.priceUsd), Modifier.padding(start = 10.dp))
         }
         // The button should not be enabled when the usd text is empty
-        Button(onClick = { buyCryptoViewModel.buyCrypto(crypto, usdText.toDouble())}, enabled = usdText != "",
+        Button(onClick = { buyCryptoViewModel.buyCrypto(crypto, usdText.toDouble()) }, enabled = usdText != "",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth(.7f)) {

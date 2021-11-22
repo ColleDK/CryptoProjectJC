@@ -1,10 +1,12 @@
 package com.example.cryptoprojectjetpackcompose.views.activity.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
@@ -45,3 +47,12 @@ fun CryptoProjectJetpackComposeTheme(
         content = content
     )
 }
+
+// Create my own gradient color
+@get:Composable
+val Colors.gradientBottom: androidx.compose.ui.graphics.Color
+    get() = Color(0xFF4C5270)
+
+@get:Composable
+val Colors.gradientTop: androidx.compose.ui.graphics.Color
+    get() = Color(0xFF3A0842)

@@ -71,7 +71,7 @@ class SellCryptoViewModel: ViewModel() {
             val price = amount * crypto.priceUsd
 
             // Create a transaction
-            val newTransaction = TransactionModel(cryptoName = crypto.name, volume = amount, price = price, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.SOLD)
+            val newTransaction = TransactionModel(cryptoName = crypto.name, cryptoSymbol = crypto.symbol, volume = amount, price = price, timestamp = Date(), state = TransactionEntity.Companion.TransactionState.SOLD)
             // Insert the transaction to the database
             ServiceLocator.getTransactionRepository().addTransaction(newTransaction)
             // Add the transaction to the user

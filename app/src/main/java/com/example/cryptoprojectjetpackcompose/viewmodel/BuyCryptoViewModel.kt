@@ -75,6 +75,7 @@ class BuyCryptoViewModel: ViewModel() {
             // Create a transaction
             val newTransaction = TransactionModel(
                 cryptoName = crypto.name,
+                cryptoSymbol = crypto.symbol,
                 volume = volume,
                 price = price,
                 timestamp = Date(),

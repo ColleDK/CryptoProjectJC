@@ -92,13 +92,9 @@ object ServiceLocator {
         UserInfoViewModel()
     }
 
-    /*private val userViewModel by lazy {
-        UserViewModel()
+    private val transactionViewModel by lazy {
+        TransactionViewModel()
     }
-
-    private val cryptoViewModel by lazy {
-        CryptoViewModel()
-    }*/
 
 
 
@@ -122,7 +118,5 @@ object ServiceLocator {
     fun getBuyCryptoViewModelSL() = this.buyCryptoViewModel
     fun getSellCryptoViewModelSL() = this.sellCryptoViewModel
     fun getUserInfoViewModelSL() = this.userInfoViewModel
-
-    /*fun getUserViewModelSL() = this.userViewModel
-    fun getCryptoViewModelSL() = this.cryptoViewModel*/
+    fun getTransactionViewModelSL() = this.transactionViewModel
 }
