@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +31,8 @@ import com.example.cryptoprojectjetpackcompose.model.OwnedCryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.UserInfoViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
 import java.util.*
 
 class UserInfoActivity : ComponentActivity() {
@@ -75,40 +78,86 @@ fun PortfolioScreen(userInfoViewModel: UserInfoViewModel){
 
 
 @Composable
-fun PortfolioList(user: UserModel, cryptoPrices: Map<String, Double>, cryptoPics: Map<String, Bitmap>){
+fun PortfolioList(user: UserModel, cryptoPrices: Map<String, Double>, cryptoPics: Map<String, Bitmap>) {
     val context = LocalContext.current
-    Column(Modifier.fillMaxSize(1f)) {
-        Row(Modifier.fillMaxWidth()) {
-            Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent), enabled = false) {
-                Text(text = "Points: " + user.balance.toString() + " USD", textAlign = TextAlign.Center)
-            }
+    Box() {
+        // Background of the content
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.gradientTop,
+                            MaterialTheme.colors.gradientBottom
+                        )
+                    )
+                )
+        ) {
+
         }
-        Row(Modifier.fillMaxWidth()) {
-            Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent), enabled = false) {
-                Text(text = "Your total current points are the sum of current value of all your currencies in USD", textAlign = TextAlign.Center)
+        Column(Modifier.fillMaxSize(1f)) {
+            Row(Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = {},
+                    Modifier.fillMaxWidth(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+                    enabled = false
+                ) {
+                    Text(
+                        text = "Points: " + user.balance.toString() + " USD",
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
-        }
-        Row(Modifier.fillMaxWidth()) {
-            Button(onClick = {}, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent), enabled = false) {
-                Text(text = "My Portfolio", textAlign = TextAlign.Center)
+            Row(Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = {},
+                    Modifier.fillMaxWidth(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+                    enabled = false
+                ) {
+                    Text(
+                        text = "Your total current points are the sum of current value of all your currencies in USD",
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
-        }
-        LazyColumn(Modifier.fillMaxWidth(1f)){
-            items(user.currentCryptos.toList()){ item ->
-                PortfolioListItem(cryptoPrices = cryptoPrices, currentCrypto = item, pictures = cryptoPics)
+            Row(Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = {},
+                    Modifier.fillMaxWidth(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+                    enabled = false
+                ) {
+                    Text(text = "My Portfolio", textAlign = TextAlign.Center)
+                }
             }
-        }
-        //TODO make button not disappear when lazycolumn gets initialized
-        Button(onClick = { context.startActivity(
-            Intent(
-                context,
-                TransactionActivity::class.java
-            )
-        ) }, modifier = Modifier
-            .align(CenterHorizontally)
-            .fillMaxWidth(.7f)
-            .background(color = Color.Black)) {
-            Text(text = "Transactions", color = Color.Black)
+            LazyColumn(Modifier.fillMaxWidth(1f)) {
+                items(user.currentCryptos.toList()) { item ->
+                    PortfolioListItem(
+                        cryptoPrices = cryptoPrices,
+                        currentCrypto = item,
+                        pictures = cryptoPics
+                    )
+                }
+            }
+            //TODO make button not disappear when lazycolumn gets initialized
+            Button(
+                onClick = {
+                    context.startActivity(
+                        Intent(
+                            context,
+                            TransactionActivity::class.java
+                        )
+                    )
+                }, modifier = Modifier
+                    .align(CenterHorizontally)
+                    .fillMaxWidth(.7f)
+                    .background(color = Color.Black)
+            ) {
+                Text(text = "Transactions", color = Color.Black)
+            }
         }
     }
 }

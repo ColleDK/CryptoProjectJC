@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +33,8 @@ import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.BuySellViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
 import com.madrapps.plot.line.DataPoint
 import com.madrapps.plot.line.LineGraph
 import com.madrapps.plot.line.LinePlot
@@ -89,18 +92,38 @@ fun BuySellScreen(buySellViewModel: BuySellViewModel){
 // The whole activity composable
 @Composable
 fun CryptoBuyerSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, cryptoPrices: List<List<DataPoint>>) {
-    LazyColumn(
-        Modifier
-            .fillMaxSize(1f)
-            .padding(top = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top){
-        items(cryptoList){ item ->
-            CryptoBuyerSellerTopBar(crypto = item)
+    Box() {
+        // Background of the content
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.gradientTop,
+                            MaterialTheme.colors.gradientBottom
+                        )
+                    )
+                )
+        ) {
+
         }
-        items(user){ item ->
-            CryptoBuyerSellerMiddle(user = item, currentCrypt = cryptoList[0])
-        }
-        items(cryptoPrices){ item ->
-            ChartBuilder(cryptoPrices = item)
+        LazyColumn(
+            Modifier
+                .fillMaxSize(1f)
+                .padding(top = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            items(cryptoList) { item ->
+                CryptoBuyerSellerTopBar(crypto = item)
+            }
+            items(user) { item ->
+                CryptoBuyerSellerMiddle(user = item, currentCrypt = cryptoList[0])
+            }
+            items(cryptoPrices) { item ->
+                ChartBuilder(cryptoPrices = item)
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -27,6 +29,8 @@ import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.MainViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
 import java.util.*
 
 class MainActivity : ComponentActivity() {
@@ -74,18 +78,49 @@ fun StartScreen(mainViewModel: MainViewModel){
 @Composable
 fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
     val context = LocalContext.current
-    Column() {
-        // Header with user info
-        Row(Modifier.fillMaxWidth()) {
-            // If we click the header we want to direct to the user info page
-            Button(onClick = { context.startActivity(Intent(context, UserInfoActivity::class.java)) }, Modifier.fillMaxWidth(1f), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)) {
-                Text(text = "Points: " + user.balance.toString() + " USD", textAlign = TextAlign.Center)
-            }
+    Box() {
+        // Background of the content
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.gradientTop,
+                            MaterialTheme.colors.gradientBottom
+                        )
+                    )
+                )
+        ) {
+
         }
-        // List of cryptos
-        LazyColumn(Modifier.fillMaxSize(1f)){
-            items(cryptoList){ item ->
-                CryptoItem(crypto = item)
+        Column() {
+            // Header with user info
+            Row(Modifier.fillMaxWidth()) {
+                // If we click the header we want to direct to the user info page
+                Button(
+                    onClick = {
+                        context.startActivity(
+                            Intent(
+                                context,
+                                UserInfoActivity::class.java
+                            )
+                        )
+                    },
+                    Modifier.fillMaxWidth(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+                ) {
+                    Text(
+                        text = "Points: " + user.balance.toString() + " USD",
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            // List of cryptos
+            LazyColumn(Modifier.fillMaxSize(1f)) {
+                items(cryptoList) { item ->
+                    CryptoItem(crypto = item)
+                }
             }
         }
     }

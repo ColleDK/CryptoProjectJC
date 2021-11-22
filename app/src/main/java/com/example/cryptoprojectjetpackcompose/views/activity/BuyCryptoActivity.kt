@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,10 +25,13 @@ import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoPro
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.MutableLiveData
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.viewmodel.BuyCryptoViewModel
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
 
 import java.util.*
 
@@ -84,19 +88,39 @@ fun BuyCryptoScreen(buyCryptoViewModel: BuyCryptoViewModel){
 // Whole layout for the activity
 @Composable
 fun CryptoBuyer(cryptoList: List<CryptoModel>, user: List<UserModel>, buyCryptoViewModel: BuyCryptoViewModel){
-    LazyColumn(
-        Modifier
-            .fillMaxSize(1f)
-            .padding(top = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top){
-        items(cryptoList){ item ->
-            // same top bar as the previous activity
-            CryptoBuyerSellerTopBar(crypto = item)
+    Box() {
+        // Background of the content
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.gradientTop,
+                            MaterialTheme.colors.gradientBottom
+                        )
+                    )
+                )
+        ) {
+
         }
-        items(cryptoList){ item ->
-            CryptoBuyerMiddle(crypto = item, buyCryptoViewModel = buyCryptoViewModel)
-        }
-        items(user){ item ->
-            CryptoBuyerUserInfo(user = item)
+        LazyColumn(
+            Modifier
+                .fillMaxSize(1f)
+                .padding(top = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            items(cryptoList) { item ->
+                // same top bar as the previous activity
+                CryptoBuyerSellerTopBar(crypto = item)
+            }
+            items(cryptoList) { item ->
+                CryptoBuyerMiddle(crypto = item, buyCryptoViewModel = buyCryptoViewModel)
+            }
+            items(user) { item ->
+                CryptoBuyerUserInfo(user = item)
+            }
         }
     }
 }

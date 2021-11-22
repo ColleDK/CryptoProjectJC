@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,6 +34,8 @@ import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.SellCryptoViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
 import java.util.*
 
 class SellCryptoActivity : ComponentActivity() {
@@ -86,18 +90,38 @@ fun SellCryptoScreen(sellCryptoViewModel: SellCryptoViewModel){
 
 @Composable
 fun CryptoSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, sellCryptoViewModel: SellCryptoViewModel){
-    LazyColumn(
-        Modifier
-            .fillMaxSize(1f)
-            .padding(top = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top){
-        items(cryptoList){ item ->
-            CryptoBuyerSellerTopBar(crypto = item)
+    Box() {
+        // Background of the content
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.gradientTop,
+                            MaterialTheme.colors.gradientBottom
+                        )
+                    )
+                )
+        ) {
+
         }
-        items(cryptoList){ item ->
-            CryptoSellerMiddle(crypto = item, sellCryptoViewModel = sellCryptoViewModel)
-        }
-        items(user){ item ->
-            CryptoSellerUserInfo(user = item, cryptoSymbol = cryptoList[0].symbol)
+        LazyColumn(
+            Modifier
+                .fillMaxSize(1f)
+                .padding(top = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            items(cryptoList) { item ->
+                CryptoBuyerSellerTopBar(crypto = item)
+            }
+            items(cryptoList) { item ->
+                CryptoSellerMiddle(crypto = item, sellCryptoViewModel = sellCryptoViewModel)
+            }
+            items(user) { item ->
+                CryptoSellerUserInfo(user = item, cryptoSymbol = cryptoList[0].symbol)
+            }
         }
     }
 }
