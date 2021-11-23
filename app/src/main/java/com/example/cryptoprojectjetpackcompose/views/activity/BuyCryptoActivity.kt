@@ -57,12 +57,15 @@ class BuyCryptoActivity : ComponentActivity() {
         super.onResume()
         // Save the time as the state so that it will always be different
         screenState.value = Date().toString()
+
+        // Update data at on resume call
+        ServiceLocator.getBuyCryptoViewModelSL().getUser()
+        ServiceLocator.getBuyCryptoViewModelSL().getCrypto((intent.getSerializableExtra("crypto") as CryptoModel).name)
     }
 }
 
 @Composable
 fun InitBuyScreen(buyCryptoViewModel: BuyCryptoViewModel = ServiceLocator.getBuyCryptoViewModelSL()){
-    // TODO Figure if this code is redundant since we already loaded the data last activity
     // Get the crypto to be bought from the intent
     val context = LocalContext.current
     val intent = (context as Activity).intent

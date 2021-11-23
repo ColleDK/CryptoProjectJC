@@ -1,6 +1,7 @@
 package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.app.Activity
+import android.app.Service
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -62,6 +63,14 @@ class BuySellActivity : ComponentActivity() {
         super.onResume()
         // Save the time as the state so that it will always be different
         screenState.value = Date().toString()
+
+        // Update data at on resume call
+        ServiceLocator.getBuySellViewModelSL().getUser()
+        intent.getStringExtra("cryptoName")?.let {
+            ServiceLocator.getBuySellViewModelSL().getCrypto(
+                it
+            )
+        }
     }
 }
 
@@ -203,10 +212,7 @@ fun ChartBuilder(cryptoPrices: List<DataPoint>){
         )) , grid = LinePlot.Grid(color = Color.Gray, steps = cryptoPrices.size), yAxis = LinePlot.YAxis(steps = 10, roundToInt = false)
         ), modifier = Modifier
         .fillMaxWidth()
-        .height(400.dp),
-        onSelection = { xline, points ->
-            // TODO
-        }
+        .height(400.dp)
     )
 }
 

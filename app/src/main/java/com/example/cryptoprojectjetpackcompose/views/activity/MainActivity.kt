@@ -11,15 +11,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,9 +32,7 @@ import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.MainViewModel
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.*
 import java.util.*
 
 class MainActivity : ComponentActivity() {
@@ -52,6 +54,10 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         // Save the time as the state so that it will always be different
         screenState.value = Date().toString()
+
+        // Update the data on resume call
+        ServiceLocator.getMainViewModelSL().getCryptos()
+        ServiceLocator.getMainViewModelSL().getUser()
     }
 }
 
@@ -107,12 +113,18 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
                             )
                         )
                     },
-                    Modifier.fillMaxWidth(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+                    Modifier.fillMaxWidth(1f)
+                        .padding(bottom = 20.dp)
+                        .clip(CircleShape),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.buttonColor)
                 ) {
+                    var balance = user.balance
+                    user.currentCryptos.forEach { balance += it.volume * ((cryptoList.find { it2 -> it2.name == it.cryptoName })?.priceUsd
+                        ?: 0.0) }
                     Text(
-                        text = "Points: " + user.balance.toString() + " USD",
-                        textAlign = TextAlign.Center
+                        text = "Points: ${"%.5f".format(balance)} USD",
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(fontWeight = FontWeight.Bold)
                     )
                 }
             }
@@ -130,28 +142,49 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
 @Composable
 fun CryptoItem(crypto: CryptoModel){
     val context = LocalContext.current
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clickable(onClick = {
-                // If we click an item in the list we want to go to the buy/sell page and the specific crypto is sent with the intent
-                context.startActivity(
-                    Intent(
-                        context,
-                        BuySellActivity::class.java
-                    ).putExtra("cryptoName", crypto.name)
+    Box(Modifier.padding(bottom = 10.dp)) {
+        Box(modifier = Modifier
+            .matchParentSize()
+            .clip(shape = CircleShape)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colors.itemColor,
+                        MaterialTheme.colors.itemColor
+                    )
                 )
-            }), Arrangement.Start) {
-        crypto.picture?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "",
-            Modifier
-                .size(32.dp)
-                .align(Alignment.CenterVertically)) }
-        Column() {
-            Text(text = crypto.name)
-            Text(text = crypto.symbol)
+            )
+        ) {
+
         }
-        Text(text = "%.3f".format(crypto.priceUsd), Modifier.padding(10.dp))
-        Text(text = "%.3f".format(crypto.changePercent24Hr), Modifier.padding(10.dp), color = if (crypto.changePercent24Hr > 0) Color.Green else Color.Red)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = {
+                    // If we click an item in the list we want to go to the buy/sell page and the specific crypto is sent with the intent
+                    context.startActivity(
+                        Intent(
+                            context,
+                            BuySellActivity::class.java
+                        ).putExtra("cryptoName", crypto.name)
+                    )
+                }), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
+            // The picture of the crypto
+            crypto.picture?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "Image of ${crypto.name}",
+                Modifier
+                    .size(32.dp)
+                    .padding(start = 5.dp)
+                    .clip(CircleShape)) }
+            // The name and symbol of the crypto
+            Column(Modifier.padding(start = 10.dp)) {
+                Text(text = crypto.name, color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold))
+                Text(text = crypto.symbol, color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold))
+            }
+            // The price of the crypto
+            Text(text = "%.3f".format(crypto.priceUsd), Modifier.padding(start = 20.dp), color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold), textAlign = TextAlign.Center)
+            // The change in price in the recent 24 Hours
+            Text(text = "%.3f".format(crypto.changePercent24Hr), Modifier.padding(start = 20.dp, end = 20.dp).fillMaxWidth(1f), color = if (crypto.changePercent24Hr > 0) Color.Green else Color.Red, style = TextStyle(fontWeight = FontWeight.Bold), textAlign = TextAlign.End)
+        }
     }
 }
 

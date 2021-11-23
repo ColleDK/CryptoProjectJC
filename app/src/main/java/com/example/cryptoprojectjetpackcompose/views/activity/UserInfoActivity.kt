@@ -31,6 +31,7 @@ import com.example.cryptoprojectjetpackcompose.model.OwnedCryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.UserInfoViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.buttonColor
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
 import java.util.*
@@ -57,6 +58,9 @@ class UserInfoActivity : ComponentActivity() {
         super.onResume()
         // Save the time as the state so that it will always be different
         screenState.value = Date().toString()
+
+        // Update data on resume call
+        ServiceLocator.getUserInfoViewModelSL().getUser()
     }
 }
 
@@ -98,40 +102,24 @@ fun PortfolioList(user: UserModel, cryptoPrices: Map<String, Double>, cryptoPics
         }
         Column(Modifier.fillMaxSize(1f)) {
             Row(Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = {},
-                    Modifier.fillMaxWidth(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-                    enabled = false
-                ) {
-                    Text(
-                        text = "Points: " + user.balance.toString() + " USD",
-                        textAlign = TextAlign.Center
-                    )
-                }
+                Text(
+                    text = "Points: " + user.balance.toString() + " USD",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(1f)
+                )
             }
             Row(Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = {},
-                    Modifier.fillMaxWidth(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-                    enabled = false
-                ) {
-                    Text(
-                        text = "Your total current points are the sum of current value of all your currencies in USD",
-                        textAlign = TextAlign.Center
-                    )
-                }
+                Text(
+                    text = "Your total current points are the sum of current value of all your currencies in USD",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(1f)
+                )
             }
             Row(Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = {},
-                    Modifier.fillMaxWidth(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-                    enabled = false
-                ) {
-                    Text(text = "My Portfolio", textAlign = TextAlign.Center)
-                }
+                Text(
+                    text = "My Portfolio",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(1f))
             }
             LazyColumn(Modifier.fillMaxWidth(1f)) {
                 items(user.currentCryptos.toList()) { item ->
@@ -153,8 +141,8 @@ fun PortfolioList(user: UserModel, cryptoPrices: Map<String, Double>, cryptoPics
                     )
                 }, modifier = Modifier
                     .align(CenterHorizontally)
-                    .fillMaxWidth(.7f)
-                    .background(color = Color.Black)
+                    .fillMaxWidth(.7f),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.buttonColor)
             ) {
                 Text(text = "Transactions", color = Color.Black)
             }

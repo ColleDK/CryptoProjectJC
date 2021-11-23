@@ -50,9 +50,17 @@ fun CryptoProjectJetpackComposeTheme(
 
 // Create my own gradient color
 @get:Composable
-val Colors.gradientBottom: androidx.compose.ui.graphics.Color
+val Colors.gradientBottom: Color
     get() = Color(0xFF4C5270)
 
 @get:Composable
-val Colors.gradientTop: androidx.compose.ui.graphics.Color
+val Colors.gradientTop: Color
     get() = Color(0xFF3A0842)
+
+@get:Composable
+val Colors.buttonColor: Color
+    get() = Color(0xFFB4F8C8)
+
+@get:Composable
+val Colors.itemColor: Color
+    get() = Color(0xFF6B40E1)

@@ -37,8 +37,6 @@ import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.Shapes
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
 
-
-// TODO Make transaction page
 class TransactionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +48,13 @@ class TransactionActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Update data on resume call
+        ServiceLocator.getTransactionViewModelSL().getUser()
     }
 }
 

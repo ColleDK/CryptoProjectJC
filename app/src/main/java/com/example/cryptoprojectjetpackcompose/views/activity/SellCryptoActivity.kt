@@ -60,12 +60,15 @@ class SellCryptoActivity : ComponentActivity() {
         super.onResume()
         // Save the time as the state so that it will always be different
         screenState.value = Date().toString()
+
+        // Update data at on resume call
+        ServiceLocator.getSellCryptoViewModelSL().getUser()
+        ServiceLocator.getSellCryptoViewModelSL().getCrypto((intent.getSerializableExtra("crypto") as CryptoModel).name)
     }
 }
 
 @Composable
 fun InitSellCryptoScreen(sellCryptoViewModel: SellCryptoViewModel = ServiceLocator.getSellCryptoViewModelSL()){
-    // TODO Check if code is redundant since we got the info from last activity
     val context = LocalContext.current
     val intent = (context as Activity).intent
     val crypto = intent.getSerializableExtra("crypto") as CryptoModel
@@ -127,7 +130,6 @@ fun CryptoSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, sellCrypt
 }
 
 
-// TODO Probably change the USDTEXT with a cryptoAmount and reconfigure calculations
 @Composable
 fun CryptoSellerMiddle(crypto: CryptoModel, sellCryptoViewModel: SellCryptoViewModel){
     Column() {
