@@ -12,30 +12,30 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.MutableLiveData
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.BuySellViewModel
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.*
 import com.madrapps.plot.line.DataPoint
 import com.madrapps.plot.line.LineGraph
 import com.madrapps.plot.line.LinePlot
@@ -119,8 +119,7 @@ fun CryptoBuyerSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, cryp
         }
         LazyColumn(
             Modifier
-                .fillMaxSize(1f)
-                .padding(top = 10.dp),
+                .fillMaxSize(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -140,18 +139,34 @@ fun CryptoBuyerSeller(cryptoList: List<CryptoModel>, user: List<UserModel>, cryp
 // The top bar includes the picture of the crypto, the name and symbol and the current price of the crypto
 @Composable
 fun CryptoBuyerSellerTopBar(crypto: CryptoModel){
-    Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth()) {
+    Box(Modifier.padding(top = 10.dp)) {
+        Box(modifier = Modifier
+            .matchParentSize()
+            .clip(shape = CircleShape)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colors.itemColor,
+                        MaterialTheme.colors.itemColor
+                    )
+                )
+            )
+        ) {
+
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(1f), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically)
+        {
             crypto.picture?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "",
                 Modifier
                     .size(64.dp)
-                    .align(Alignment.CenterVertically)) }
-            Column() {
-                Text(text = crypto.name + " (" + crypto.symbol + ")")
-                Text(text = "$" + "%.3f".format(crypto.priceUsd))
+                    .padding(start = 5.dp)
+                    .clip(CircleShape)) }
+            Column(Modifier.padding(start = 10.dp)) {
+                Text(text = crypto.name + " (" + crypto.symbol + ")", color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold))
+                Text(text = "$" + "%.3f".format(crypto.priceUsd), color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold))
             }
         }
-
     }
 }
 
@@ -161,30 +176,61 @@ fun CryptoBuyerSellerMiddle(user: UserModel, currentCrypt: CryptoModel){
     Column(
         Modifier
             .fillMaxWidth()
-            .background(Color.Gray)
             .padding(top = 10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         // Check for the amount of current crypto the user owns
         val cryptoInSet = user.currentCryptos.find { it.cryptoName == currentCrypt.name }
         val supply = cryptoInSet?.volume ?: 0.0
-
-        // Text for the amount of supply owned by the user
-        Text(text = "You have $supply ${currentCrypt.symbol.toUpperCase()}")
-        Text(text = "$supply x ${currentCrypt.priceUsd}")
-        Text(text = "Value ${supply * currentCrypt.priceUsd}")
-
+        Box(Modifier.padding(top = 10.dp)) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(shape = CircleShape)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colors.itemColor,
+                                MaterialTheme.colors.itemColor
+                            )
+                        )
+                    )
+            ) {
+            }
+            Column(Modifier.fillMaxWidth(1f), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                // Text for the amount of supply owned by the user
+                Text(
+                    text = "You have $supply ${currentCrypt.symbol.toUpperCase()}",
+                    color = Color.Black,
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    fontSize = 20.sp
+                )
+                Text(
+                    text = "$supply x ${currentCrypt.priceUsd}",
+                    color = Color.Black,
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    fontSize = 20.sp
+                )
+                Text(
+                    text = "Value ${supply * currentCrypt.priceUsd}",
+                    color = Color.Black,
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    fontSize = 20.sp
+                )
+            }
+        }
         // Buy and sell buttons
-        Row(Modifier.fillMaxWidth(1f), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Row(
+            Modifier
+                .fillMaxWidth(1f)
+                .padding(top = 20.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
             val localContext = LocalContext.current
             // If the users balance is 0 then we dont want them to have the ability to buy the crypto
-            Button(onClick = { localContext.startActivity(Intent(localContext, BuyCryptoActivity::class.java).putExtra("crypto", currentCrypt)) }, enabled = user.balance > 0.0) {
-                Text(text = "Buy")
+            Button(onClick = { localContext.startActivity(Intent(localContext, BuyCryptoActivity::class.java).putExtra("crypto", currentCrypt)) }, enabled = user.balance > 0.0, colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.buttonColor)) {
+                Text(text = "Buy", color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold))
             }
 
             // If the user does not own any of the current crypto then we dont want them to have the ability to sell it
-            Log.d("IsEnabled", (supply != 0.0).toString())
-            Log.d("IsEnabled", "Supply $supply")
-            Button(onClick = { localContext.startActivity(Intent(localContext, SellCryptoActivity::class.java).putExtra("crypto", currentCrypt)) }, enabled = supply != 0.0) {
-                Text(text = "Sell")
+            Button(onClick = { localContext.startActivity(Intent(localContext, SellCryptoActivity::class.java).putExtra("crypto", currentCrypt)) }, enabled = supply != 0.0, colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.buttonColor)) {
+                Text(text = "Sell", color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold))
             }
         }
     }
@@ -213,6 +259,7 @@ fun ChartBuilder(cryptoPrices: List<DataPoint>){
         ), modifier = Modifier
         .fillMaxWidth()
         .height(400.dp)
+        .padding(top = 20.dp)
     )
 }
 

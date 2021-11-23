@@ -22,9 +22,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
@@ -100,7 +103,7 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
         ) {
 
         }
-        Column() {
+        Column(Modifier.padding(top = 10.dp)) {
             // Header with user info
             Row(Modifier.fillMaxWidth()) {
                 // If we click the header we want to direct to the user info page
@@ -114,7 +117,7 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
                         )
                     },
                     Modifier.fillMaxWidth(1f)
-                        .padding(bottom = 20.dp)
+                        .padding(bottom = 10.dp)
                         .clip(CircleShape),
                     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.buttonColor)
                 ) {
@@ -142,7 +145,7 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
 @Composable
 fun CryptoItem(crypto: CryptoModel){
     val context = LocalContext.current
-    Box(Modifier.padding(bottom = 10.dp)) {
+    Box(Modifier.padding(top = 10.dp)) {
         Box(modifier = Modifier
             .matchParentSize()
             .clip(shape = CircleShape)
@@ -183,7 +186,15 @@ fun CryptoItem(crypto: CryptoModel){
             // The price of the crypto
             Text(text = "%.3f".format(crypto.priceUsd), Modifier.padding(start = 20.dp), color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold), textAlign = TextAlign.Center)
             // The change in price in the recent 24 Hours
-            Text(text = "%.3f".format(crypto.changePercent24Hr), Modifier.padding(start = 20.dp, end = 20.dp).fillMaxWidth(1f), color = if (crypto.changePercent24Hr > 0) Color.Green else Color.Red, style = TextStyle(fontWeight = FontWeight.Bold), textAlign = TextAlign.End)
+            Text(text = buildAnnotatedString
+            {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = if (crypto.changePercent24Hr > 0) Color.Green else Color.Red)){
+                    append("%.3f".format(crypto.changePercent24Hr))
+                }
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)){
+                    append(" USD")
+                }
+            }, Modifier.padding(start = 20.dp, end = 20.dp).fillMaxWidth(1f), textAlign = TextAlign.End)
         }
     }
 }
