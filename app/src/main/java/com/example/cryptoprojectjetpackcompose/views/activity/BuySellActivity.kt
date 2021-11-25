@@ -180,7 +180,7 @@ fun CryptoBuyerSellerMiddle(user: UserModel, currentCrypt: CryptoModel){
         // Check for the amount of current crypto the user owns
         val cryptoInSet = user.currentCryptos.find { it.cryptoName == currentCrypt.name }
         val supply = cryptoInSet?.volume ?: 0.0
-        Box(Modifier.padding(top = 10.dp)) {
+        Box(Modifier.padding(top = 10.dp).fillMaxWidth(1f)) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -193,24 +193,27 @@ fun CryptoBuyerSellerMiddle(user: UserModel, currentCrypt: CryptoModel){
                             )
                         )
                     )
+            ) {}
+            Column(
+                Modifier.fillMaxWidth(1f).padding(start = 10.dp, end = 10.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-            }
-            Column(Modifier.fillMaxWidth(1f), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                 // Text for the amount of supply owned by the user
                 Text(
-                    text = "You have $supply ${currentCrypt.symbol.toUpperCase()}",
+                    text = "You have ${"%.5f".format(supply)} ${currentCrypt.symbol.toUpperCase()}",
                     color = Color.Black,
                     style = TextStyle(fontWeight = FontWeight.Bold),
                     fontSize = 20.sp
                 )
                 Text(
-                    text = "$supply x ${currentCrypt.priceUsd}",
+                    text = "${"%.5f".format(supply)} x ${"%.5f".format(currentCrypt.priceUsd)}",
                     color = Color.Black,
                     style = TextStyle(fontWeight = FontWeight.Bold),
                     fontSize = 20.sp
                 )
                 Text(
-                    text = "Value ${supply * currentCrypt.priceUsd}",
+                    text = "Value ${"%.5f".format(supply * currentCrypt.priceUsd)}",
                     color = Color.Black,
                     style = TextStyle(fontWeight = FontWeight.Bold),
                     fontSize = 20.sp

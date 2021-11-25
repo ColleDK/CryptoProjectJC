@@ -91,4 +91,6 @@ dependencies {
     // chart builder
     //implementation 'com.github.tehras:charts:Tag'
     implementation 'com.github.madrapps:plot:0.1.1'
-}
+
+    // Lottie animations
+    implementation "com.airbnb.android:lottie-compose:4.2.1"}

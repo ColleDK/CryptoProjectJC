@@ -178,6 +178,7 @@ fun InitialTransactionItem(initialTransaction: TransactionModel){
                 Text(text = "${initialTransaction.timestamp}",
                     color = Color.Black,
                     style = TextStyle(fontWeight = FontWeight.Bold)
+                )
             }
         }
     }
