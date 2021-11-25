@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,14 +19,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.MutableLiveData
+import com.example.cryptoprojectjetpackcompose.R
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.OwnedCryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
@@ -101,25 +107,41 @@ fun PortfolioList(user: UserModel, cryptoPrices: Map<String, Double>, cryptoPics
 
         }
         Column(Modifier.fillMaxSize(1f)) {
-            Row(Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Points: " + user.balance.toString() + " USD",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(1f)
+            Box(modifier = Modifier
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.gradientTop,
+                            MaterialTheme.colors.gradientBottom
+                        )
+                    )
                 )
-            }
-            Row(Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Your total current points are the sum of current value of all your currencies in USD",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(1f)
-                )
-            }
-            Row(Modifier.fillMaxWidth()) {
-                Text(
-                    text = "My Portfolio",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(1f))
+            ) {
+                Column() {
+                    Row(Modifier.fillMaxWidth()) {
+                        var points = user.balance
+                        user.currentCryptos.forEach { points += cryptoPrices[it.cryptoName] ?: 0.0}
+                        Text(
+                            text = "Points: ${"%.3f".format(points)} USD",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(1f)
+                        )
+                    }
+                    Row(Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "Your total current points are the sum of current value of all your currencies in USD",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(1f)
+                        )
+                    }
+                    Row(Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "My Portfolio",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(1f))
+                    }
+                    PortfolioBalanceItem(user.balance)
+                }
             }
             LazyColumn(Modifier.fillMaxWidth(1f)) {
                 items(user.currentCryptos.toList()) { item ->
@@ -141,10 +163,11 @@ fun PortfolioList(user: UserModel, cryptoPrices: Map<String, Double>, cryptoPics
                     )
                 }, modifier = Modifier
                     .align(CenterHorizontally)
+                    .padding(top = 20.dp)
                     .fillMaxWidth(.7f),
                 colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.buttonColor)
             ) {
-                Text(text = "Transactions", color = Color.Black)
+                Text(text = "Transactions", color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold))
             }
         }
     }
@@ -152,15 +175,41 @@ fun PortfolioList(user: UserModel, cryptoPrices: Map<String, Double>, cryptoPics
 
 @Composable
 fun PortfolioListItem(cryptoPrices: Map<String, Double>, currentCrypto: OwnedCryptoModel, pictures: Map<String, Bitmap>){
-    Row(Modifier.padding(top = 10.dp)) {
-        pictures[currentCrypto.cryptoSymbol]?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "", modifier = Modifier.size(32.dp)) }
-        Column() {
-            Text(text = "${"%.3f".format(currentCrypto.volume)}x${"%.3f".format(cryptoPrices[currentCrypto.cryptoName])}")
-            cryptoPrices[currentCrypto.cryptoName]?.let {Text(text = "${"%.3f".format(currentCrypto.volume*it)} USD")  }
+    Box(Modifier.padding(top = 10.dp)){
+        Box(
+            Modifier
+                .matchParentSize()
+                .clip(CircleShape)
+                .background(color = MaterialTheme.colors.buttonColor)){
+        }
+        Row() {
+            pictures[currentCrypto.cryptoSymbol]?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "", modifier = Modifier
+                .size(32.dp)
+                .clip(
+                    CircleShape
+                )) }
+            Column() {
+                Text(text = "${"%.3f".format(currentCrypto.volume)}x${"%.3f".format(cryptoPrices[currentCrypto.cryptoName])}")
+                cryptoPrices[currentCrypto.cryptoName]?.let {Text(text = "${"%.3f".format(currentCrypto.volume*it)} USD")  }
+            }
         }
     }
 }
 
+@Composable
+fun PortfolioBalanceItem(userbalance: Double){
+    Row(
+        Modifier
+            .padding(top = 10.dp)
+            .fillMaxWidth(1f)) {
+        Image(painter = painterResource(id = R.drawable.money), contentDescription = "User balance", modifier = Modifier
+            .size(32.dp)
+            .clip(CircleShape))
+        Column() {
+            Text(text = "${"%.3f".format(userbalance)} USD")
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
