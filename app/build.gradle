@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 apply plugin: 'kotlin-kapt'
@@ -68,6 +70,8 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.3.0-alpha06'
 
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
+    implementation 'com.google.firebase:firebase-analytics:18.0.1'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

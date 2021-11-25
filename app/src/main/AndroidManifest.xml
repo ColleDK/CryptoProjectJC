@@ -13,6 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CryptoProjectJetpackCompose">
         <activity
+            android:name=".views.activity.SplashActivity"
+            android:exported="false"
+            android:label="@string/title_activity_splash"
+            android:theme="@style/Theme.CryptoProjectJetpackCompose.NoActionBar" />
+        <activity
             android:name=".views.activity.TransactionActivity"
             android:exported="false"
             android:label="@string/title_activity_transaction"
