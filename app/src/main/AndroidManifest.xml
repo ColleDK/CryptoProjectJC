@@ -14,9 +14,15 @@
         android:theme="@style/Theme.CryptoProjectJetpackCompose">
         <activity
             android:name=".views.activity.SplashActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_splash"
-            android:theme="@style/Theme.CryptoProjectJetpackCompose.NoActionBar" />
+            android:theme="@style/Theme.CryptoProjectJetpackCompose.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".views.activity.TransactionActivity"
             android:exported="false"
@@ -44,15 +50,9 @@
             android:theme="@style/Theme.CryptoProjectJetpackCompose.NoActionBar" />
         <activity
             android:name=".views.activity.MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/app_name"
-            android:theme="@style/Theme.CryptoProjectJetpackCompose.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.CryptoProjectJetpackCompose.NoActionBar"/>
     </application>
 
 </manifest>

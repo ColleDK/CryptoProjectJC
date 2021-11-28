@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,34 +29,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.MutableLiveData
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.MainViewModel
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.*
-import java.util.*
+import java.lang.RuntimeException
 
 class MainActivity : ComponentActivity() {
-    private val screenState = MutableLiveData("")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        prefs.edit().putBoolean("instantiated", false).apply()*/
         setContent {
-            // Have a screen state so that the view will update when it gets into foreground
-            val state = screenState.observeAsState()
-            Log.d("Screen state", "Recomposing screen - ${state.value}")
             InitStartScreen()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        // Save the time as the state so that it will always be different
-        screenState.value = Date().toString()
-
         // Update the data on resume call
         ServiceLocator.getMainViewModelSL().getCryptos()
         ServiceLocator.getMainViewModelSL().getUser()
@@ -100,9 +88,7 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
                         )
                     )
                 )
-        ) {
-
-        }
+        )
         Column(Modifier.padding(top = 10.dp)) {
             // Header with user info
             Row(Modifier.fillMaxWidth()) {
@@ -116,7 +102,8 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
                             )
                         )
                     },
-                    Modifier.fillMaxWidth(1f)
+                    Modifier
+                        .fillMaxWidth(1f)
                         .padding(bottom = 10.dp)
                         .clip(CircleShape),
                     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.buttonColor)
@@ -131,7 +118,6 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
                     )
                 }
             }
-            // List of cryptos
             LazyColumn(Modifier.fillMaxSize(1f)) {
                 items(cryptoList) { item ->
                     CryptoItem(crypto = item)
@@ -194,7 +180,10 @@ fun CryptoItem(crypto: CryptoModel){
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)){
                     append(" USD")
                 }
-            }, Modifier.padding(start = 20.dp, end = 20.dp).fillMaxWidth(1f), textAlign = TextAlign.End)
+            },
+                Modifier
+                    .padding(start = 20.dp, end = 20.dp)
+                    .fillMaxWidth(1f), textAlign = TextAlign.End)
         }
     }
 }

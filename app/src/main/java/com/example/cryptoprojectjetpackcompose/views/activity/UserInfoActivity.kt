@@ -36,10 +36,7 @@ import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.OwnedCryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.UserInfoViewModel
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.buttonColor
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.*
 import java.util.*
 
 class UserInfoActivity : ComponentActivity() {
@@ -107,42 +104,8 @@ fun PortfolioList(user: UserModel, cryptoPrices: Map<String, Double>, cryptoPics
 
         }
         Column(Modifier.fillMaxSize(1f)) {
-            Box(modifier = Modifier
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colors.gradientTop,
-                            MaterialTheme.colors.gradientBottom
-                        )
-                    )
-                )
-            ) {
-                Column() {
-                    Row(Modifier.fillMaxWidth()) {
-                        var points = user.balance
-                        user.currentCryptos.forEach { points += cryptoPrices[it.cryptoName] ?: 0.0}
-                        Text(
-                            text = "Points: ${"%.3f".format(points)} USD",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth(1f)
-                        )
-                    }
-                    Row(Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Your total current points are the sum of current value of all your currencies in USD",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth(1f)
-                        )
-                    }
-                    Row(Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "My Portfolio",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth(1f))
-                    }
-                    PortfolioBalanceItem(user.balance)
-                }
-            }
+            PortfolioTopBar(user = user, cryptoPrices = cryptoPrices)
+            PortfolioBalanceItem(user.balance)
             LazyColumn(Modifier.fillMaxWidth(1f)) {
                 items(user.currentCryptos.toList()) { item ->
                     PortfolioListItem(
@@ -174,15 +137,60 @@ fun PortfolioList(user: UserModel, cryptoPrices: Map<String, Double>, cryptoPics
 }
 
 @Composable
+fun PortfolioTopBar(user: UserModel, cryptoPrices: Map<String, Double>){
+    Box(Modifier.padding(top = 10.dp)) {
+        Box(modifier = Modifier
+            .matchParentSize()
+            .clip(shape = CircleShape)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colors.itemColor,
+                        MaterialTheme.colors.itemColor
+                    )
+                )
+            )
+        ) {
+
+        }
+        Column(modifier = Modifier.fillMaxWidth(1f)) {
+            var points = user.balance
+            user.currentCryptos.forEach { points += cryptoPrices[it.cryptoName] ?: 0.0}
+            Text(
+                text = "Points: ${"%.3f".format(points)} USD",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(1f).padding(start = 10.dp, end = 10.dp),
+                color = Color.Black,
+                style = TextStyle(fontWeight = FontWeight.Bold)
+            )
+            Text(
+                text = "Your total current points are the sum of current value of all your currencies in USD",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(1f).padding(start = 10.dp, end = 10.dp),
+                color = Color.Black,
+                style = TextStyle(fontWeight = FontWeight.Bold)
+            )
+            Text(
+                text = "My Portfolio",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(1f).padding(start = 10.dp, end = 10.dp),
+                color = Color.Black,
+                style = TextStyle(fontWeight = FontWeight.Bold)
+            )
+        }
+    }
+}
+
+@Composable
 fun PortfolioListItem(cryptoPrices: Map<String, Double>, currentCrypto: OwnedCryptoModel, pictures: Map<String, Bitmap>){
     Box(Modifier.padding(top = 10.dp)){
         Box(
             Modifier
                 .matchParentSize()
                 .clip(CircleShape)
-                .background(color = MaterialTheme.colors.buttonColor)){
+                .background(color = MaterialTheme.colors.itemColor)){
         }
-        Row() {
+        Row(Modifier.fillMaxWidth(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             pictures[currentCrypto.cryptoSymbol]?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "", modifier = Modifier
                 .size(32.dp)
                 .clip(
