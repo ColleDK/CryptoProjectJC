@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">cryptoProjectJetpackCompose</string>
+    <string name="app_name">Cryptocurrency Investor</string>
     <string name="title_activity_user_info">UserInfoActivity</string>
     <string name="title_activity_buy_sell">BuySellActivity</string>
     <string name="title_activity_buy_crypto">BuyCryptoActivity</string>
