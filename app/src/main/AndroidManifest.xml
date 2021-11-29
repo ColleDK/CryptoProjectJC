@@ -16,6 +16,7 @@
             android:name=".views.activity.SplashActivity"
             android:exported="true"
             android:label="@string/title_activity_splash"
+            android:noHistory="true"
             android:theme="@style/Theme.CryptoProjectJetpackCompose.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
