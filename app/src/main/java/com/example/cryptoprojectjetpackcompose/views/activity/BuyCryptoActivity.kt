@@ -70,6 +70,11 @@ class BuyCryptoActivity : ComponentActivity() {
         ServiceLocator.getBuyCryptoViewModelSL().getUser()
         ServiceLocator.getBuyCryptoViewModelSL().getCrypto((intent.getSerializableExtra("crypto") as CryptoModel).name)
     }
+
+    override fun finish() {
+        super.finish()
+        ServiceLocator.getBuyCryptoViewModelSL().clearError()
+    }
 }
 
 @ExperimentalComposeUiApi
