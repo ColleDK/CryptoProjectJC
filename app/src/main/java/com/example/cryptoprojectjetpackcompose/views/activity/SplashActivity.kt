@@ -1,6 +1,7 @@
 package com.example.cryptoprojectjetpackcompose.views.activity
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -30,10 +31,16 @@ import com.example.cryptoprojectjetpackcompose.R
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
 import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check if the user is on an emulator and set crashlytics accordingly
+        val EMULATOR = Build.PRODUCT.contains("sdk") || Build.MODEL.contains("Emulator")
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!EMULATOR)
+
         setContent {
             CryptoProjectJetpackComposeTheme {
                 // A surface container using the 'background' color from the theme

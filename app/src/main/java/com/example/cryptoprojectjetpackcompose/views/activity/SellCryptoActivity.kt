@@ -18,18 +18,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.MutableLiveData
 import com.airbnb.lottie.compose.LottieAnimation
@@ -41,10 +45,7 @@ import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
 import com.example.cryptoprojectjetpackcompose.viewmodel.SellCryptoViewModel
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.buttonColor
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.*
 import java.util.*
 
 class SellCryptoActivity : ComponentActivity() {
@@ -156,34 +157,87 @@ fun CryptoSellerMiddle(crypto: CryptoModel, sellCryptoViewModel: SellCryptoViewM
         var cryptoAmount by rememberSaveable {
             mutableStateOf("")
         }
-        Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = crypto.symbol)
-            TextField(value = cryptoAmount, onValueChange = {cryptoAmount = it}, Modifier.padding(start = 10.dp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+        Box(Modifier.padding(top = 10.dp, bottom = 20.dp).fillMaxWidth(1f)) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(shape = CircleShape)
+                    .background(
+                        color = MaterialTheme.colors.itemColor
+                    )
+            ) {}
+            Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 5.dp).align(Alignment.Center)) {
+                Row(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = crypto.symbol,
+                        color = Color.Black,
+                        style = TextStyle(fontWeight = FontWeight.Bold),
+                        fontSize = 15.sp)
+                    TextField(
+                        value = cryptoAmount,
+                        onValueChange = { cryptoAmount = it },
+                        Modifier.padding(start = 10.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
 
+                }
+                Row(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "USD",
+                        color = Color.Black,
+                        style = TextStyle(fontWeight = FontWeight.Bold),
+                        fontSize = 15.sp)
+                    Text(
+                        text = "%.3f".format((if (cryptoAmount == "") 0.0 else cryptoAmount.toDouble()) * crypto.priceUsd),
+                        color = Color.Black,
+                        style = TextStyle(fontWeight = FontWeight.Bold),
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                }
+            }
         }
-        Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "USD")
-            Text(text = "%.3f".format((if (cryptoAmount == "") 0.0 else cryptoAmount.toDouble()) * crypto.priceUsd), Modifier.padding(start = 10.dp))
-        }
+
+
         Button(onClick = { sellCryptoViewModel.sellCrypto(crypto,cryptoAmount.toDouble())}, enabled = (cryptoAmount != ""),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .fillMaxWidth(.7f)) {
-            Text(text = "Sell")
+                .padding(bottom = 10.dp)
+                .fillMaxWidth(.7f), colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.buttonColor)) {
+            Text(text = "Sell",
+                color = Color.Black,
+                style = TextStyle(fontWeight = FontWeight.Bold),)
         }
     }
 }
 
 @Composable
 fun CryptoSellerUserInfo(user: UserModel, cryptoSymbol: String){
-    Text(text = buildAnnotatedString {
-        append("You can only sell cryptocurrency to USD\nYou have ")
-        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)){
-            append("${user.currentCryptos.find { it.cryptoSymbol == cryptoSymbol}?.volume}")
-        }
-        append(" $cryptoSymbol")
-    })
-
+    Box(Modifier.padding(top = 10.dp, bottom = 20.dp).fillMaxWidth(1f)) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(shape = CircleShape)
+                .background(
+                    color = MaterialTheme.colors.itemColor
+                )
+        ) {}
+        Text(text = buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append("You can only sell cryptocurrency to USD\nYou have ")
+            }
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)) {
+                append("${user.currentCryptos.find { it.cryptoSymbol == cryptoSymbol }?.volume}")
+            }
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append(" $cryptoSymbol")
+            }
+        }, modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+    }
 }
 
 @ExperimentalComposeUiApi

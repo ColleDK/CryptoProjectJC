@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cryptoprojectjetpackcompose.ResultCommand
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.db.entity.TransactionEntity
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
@@ -20,6 +21,8 @@ import java.util.*
 class BuyCryptoViewModel: ViewModel() {
     private val _user = mutableStateOf(UserModel(10000.0, mutableSetOf(), mutableListOf()))
     val user = _user
+    private val _error = mutableStateOf(ResultCommand(status = ResultCommand.Status.LOADING))
+    val error = _error
 
     fun getUser(){
         viewModelScope.launch {
@@ -62,12 +65,21 @@ class BuyCryptoViewModel: ViewModel() {
         }
     }
 
+    fun clearError(){
+        _error.value = ResultCommand(status = ResultCommand.Status.LOADING)
+    }
+
     fun buyCrypto(crypto: CryptoModel, price: Double){
         // If negative price
-        if (price < 0.0) return
+        if (price < 0.0) {
+            _error.value = ResultCommand(message = "You can't buy a negative amount of ${crypto.name}", status = ResultCommand.Status.ERROR)
+            return
+        }
         // Make sure the user has enough money
-        // TODO throw exception or create message the view can use
-        if (price > _user.value.balance) return
+        if (price > _user.value.balance) {
+            _error.value = ResultCommand(message = "You don't have enough money to buy ${price / crypto.priceUsd} of ${crypto.name} for $price USD", status = ResultCommand.Status.ERROR)
+            return
+        }
         viewModelScope.launch {
             // Get the volume of the crypto to be bought
             val volume = price / crypto.priceUsd
@@ -113,6 +125,9 @@ class BuyCryptoViewModel: ViewModel() {
             current.balance -= price
             ServiceLocator.getUserRepository().updateUser(current)
             _user.value = current
+
+            _error.value = ResultCommand(message = "Congratz you just bought $volume ${crypto.name} for $price USD", status = ResultCommand.Status.SUCCESS)
+
         }
     }
 

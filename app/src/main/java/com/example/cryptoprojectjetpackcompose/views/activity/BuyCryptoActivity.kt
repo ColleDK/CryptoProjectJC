@@ -9,10 +9,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,23 +21,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cryptoprojectjetpackcompose.model.CryptoModel
 import com.example.cryptoprojectjetpackcompose.model.UserModel
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.CryptoProjectJetpackComposeTheme
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.MutableLiveData
 import com.example.cryptoprojectjetpackcompose.ServiceLocator
 import com.example.cryptoprojectjetpackcompose.viewmodel.BuyCryptoViewModel
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientBottom
-import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.gradientTop
+import com.example.cryptoprojectjetpackcompose.viewmodel.SellCryptoViewModel
+import com.example.cryptoprojectjetpackcompose.views.activity.ui.theme.*
 
 import java.util.*
 
 class BuyCryptoActivity : ComponentActivity() {
     private val screenState = MutableLiveData("")
 
+    @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -64,6 +72,7 @@ class BuyCryptoActivity : ComponentActivity() {
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun InitBuyScreen(buyCryptoViewModel: BuyCryptoViewModel = ServiceLocator.getBuyCryptoViewModelSL()){
     // Get the crypto to be bought from the intent
@@ -79,6 +88,7 @@ fun InitBuyScreen(buyCryptoViewModel: BuyCryptoViewModel = ServiceLocator.getBuy
 }
 
 
+@ExperimentalComposeUiApi
 @Composable
 fun BuyCryptoScreen(buyCryptoViewModel: BuyCryptoViewModel){
     // set up observers for necessary data
@@ -89,6 +99,7 @@ fun BuyCryptoScreen(buyCryptoViewModel: BuyCryptoViewModel){
 }
 
 // Whole layout for the activity
+@ExperimentalComposeUiApi
 @Composable
 fun CryptoBuyer(cryptoList: List<CryptoModel>, user: List<UserModel>, buyCryptoViewModel: BuyCryptoViewModel){
     Box() {
@@ -125,6 +136,8 @@ fun CryptoBuyer(cryptoList: List<CryptoModel>, user: List<UserModel>, buyCryptoV
                 CryptoBuyerUserInfo(user = item)
             }
         }
+        // Set up the alert dialog box
+        ObserveAlertBuy(buyCryptoViewModel = buyCryptoViewModel)
     }
 }
 
@@ -136,31 +149,108 @@ fun CryptoBuyerMiddle(crypto: CryptoModel, buyCryptoViewModel: BuyCryptoViewMode
         var usdText by rememberSaveable {
             mutableStateOf("")
         }
-        Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = "USD")
-            // Make the input field only accept numbers
-            TextField(value = usdText, onValueChange = {usdText = it}, Modifier.padding(start = 10.dp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+        Box(Modifier.padding(top = 10.dp, bottom = 20.dp).fillMaxWidth(1f)) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(shape = CircleShape)
+                    .background(
+                        color = MaterialTheme.colors.itemColor
+                    )
+            ) {}
+            Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 5.dp).align(Alignment.Center)) {
+                Row(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "USD",
+                        color = Color.Black,
+                        style = TextStyle(fontWeight = FontWeight.Bold),
+                        fontSize = 15.sp)
+                    // Make the input field only accept numbers
+                    TextField(value = usdText,
+                        onValueChange = {usdText = it},
+                        Modifier.padding(start = 10.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+
+                }
+                Row(modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = crypto.symbol,
+                        color = Color.Black,
+                        style = TextStyle(fontWeight = FontWeight.Bold),
+                        fontSize = 15.sp)
+                    Text(text = "%.3f".format((if (usdText == "") 0.0 else usdText.toDouble()) / crypto.priceUsd),
+                        color = Color.Black,
+                        style = TextStyle(fontWeight = FontWeight.Bold),
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(start = 10.dp))
+                }
+            }
         }
-        Row(Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = crypto.symbol)
-            Text(text = "%.3f".format((if (usdText == "") 0.0 else usdText.toDouble()) / crypto.priceUsd), Modifier.padding(start = 10.dp))
-        }
+
         // The button should not be enabled when the usd text is empty
         Button(onClick = { buyCryptoViewModel.buyCrypto(crypto, usdText.toDouble()) }, enabled = usdText != "",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .fillMaxWidth(.7f)) {
-            Text(text = "Buy")
+                .padding(bottom = 10.dp)
+                .fillMaxWidth(.7f),
+            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.buttonColor)) {
+            Text(text = "Buy",
+                color = Color.Black,
+                style = TextStyle(fontWeight = FontWeight.Bold),)
         }
     }
 }
 
 @Composable
 fun CryptoBuyerUserInfo(user: UserModel){
-    Text(text = "You can only buy cryptocurrency in USD\nYou have ${user.balance} USD")
+    Box(Modifier.padding(top = 10.dp, bottom = 20.dp).fillMaxWidth(1f)) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(shape = CircleShape)
+                .background(
+                    color = MaterialTheme.colors.itemColor
+                )
+        ) {}
+        Text(text = buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append("You can only buy cryptocurrency in USD\nYou have ")
+            }
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)) {
+                append("${user.balance}")
+            }
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append(" USD")
+            }
+        }, modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+    }
 }
 
+@ExperimentalComposeUiApi
+@Composable
+fun ObserveAlertBuy(buyCryptoViewModel: BuyCryptoViewModel){
+    // Dismissing the dialog
+    val openDialog = remember { mutableStateOf(true)}
+    // Observable state for the error handling
+    val error = buyCryptoViewModel.error
 
+    // Reset the dialog value when
+    openDialog.value = true
+
+    Log.d("SELL", "New alert incoming with status ${error.value.status} and opendialog")
+
+    // Pass the error to the alert box
+    error.value.message?.let { Alert(status = error.value.status, message = it, openValue = {openDialog.value}, onDismiss = {
+        openDialog.value = false
+    }) }
+}
+
+@ExperimentalComposeUiApi
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview4() {

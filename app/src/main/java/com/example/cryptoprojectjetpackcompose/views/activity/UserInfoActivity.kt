@@ -190,15 +190,22 @@ fun PortfolioListItem(cryptoPrices: Map<String, Double>, currentCrypto: OwnedCry
                 .clip(CircleShape)
                 .background(color = MaterialTheme.colors.itemColor)){
         }
-        Row(Modifier.fillMaxWidth(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+        Row(Modifier.fillMaxWidth(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
             pictures[currentCrypto.cryptoSymbol]?.let { Image(bitmap = it.asImageBitmap(), contentDescription = "", modifier = Modifier
+                .padding(top = 5.dp, bottom = 5.dp, start = 5.dp)
                 .size(32.dp)
                 .clip(
                     CircleShape
                 )) }
-            Column() {
-                Text(text = "${"%.3f".format(currentCrypto.volume)}x${"%.3f".format(cryptoPrices[currentCrypto.cryptoName])}")
-                cryptoPrices[currentCrypto.cryptoName]?.let {Text(text = "${"%.3f".format(currentCrypto.volume*it)} USD")  }
+            Column(Modifier.padding(start = 10.dp)) {
+                Text(text = "${"%.3f".format(currentCrypto.volume)} x ${"%.3f".format(cryptoPrices[currentCrypto.cryptoName])}",
+                    color = Color.Black,
+                    style = TextStyle(fontWeight = FontWeight.Bold))
+                cryptoPrices[currentCrypto.cryptoName]?.let {
+                    Text(text = "${"%.3f".format(currentCrypto.volume*it)} USD",
+                        color = Color.Black,
+                        style = TextStyle(fontWeight = FontWeight.Bold))
+                }
             }
         }
     }
@@ -206,15 +213,34 @@ fun PortfolioListItem(cryptoPrices: Map<String, Double>, currentCrypto: OwnedCry
 
 @Composable
 fun PortfolioBalanceItem(userbalance: Double){
-    Row(
-        Modifier
-            .padding(top = 10.dp)
-            .fillMaxWidth(1f)) {
-        Image(painter = painterResource(id = R.drawable.money), contentDescription = "User balance", modifier = Modifier
-            .size(32.dp)
-            .clip(CircleShape))
-        Column() {
-            Text(text = "${"%.3f".format(userbalance)} USD")
+    Box(Modifier.padding(top = 10.dp)) {
+        Box(
+            Modifier
+                .matchParentSize()
+                .clip(CircleShape)
+                .background(color = MaterialTheme.colors.itemColor)
+        ) {
+        }
+        Row(
+            Modifier
+                .fillMaxWidth(1f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.money),
+                contentDescription = "User balance",
+                modifier = Modifier
+                    .padding(top = 5.dp, bottom = 5.dp, start = 5.dp)
+                    .size(32.dp)
+                    .clip(CircleShape)
+            )
+            Column(Modifier.padding(start = 10.dp)) {
+                Text(text = "${"%.3f".format(userbalance)} USD",
+                    color = Color.Black,
+                    style = TextStyle(fontWeight = FontWeight.Bold)
+                )
+            }
         }
     }
 }

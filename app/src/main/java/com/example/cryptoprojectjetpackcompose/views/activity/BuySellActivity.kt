@@ -52,6 +52,7 @@ class BuySellActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.background) {
                     // Have a screen state so that the view will update when it gets into foreground
                     val state = screenState.observeAsState()
+                    Log.d("EXAMPLE", "BUNDLE CRYPTO IS - ${savedInstanceState?.getString("cryptoName")}")
                     Log.d("EXAMPLE", "Recomposing screen - ${state.value}")
                     InitBuySellScreen()
                 }
