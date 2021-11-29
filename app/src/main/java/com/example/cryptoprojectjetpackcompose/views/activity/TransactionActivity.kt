@@ -104,6 +104,7 @@ fun TransactionBody(user: UserModel, transactionPics: Map<String, Bitmap>){
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth(1f),
+                    color = Color.Black,
                     style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 )
             }
