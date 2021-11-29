@@ -57,8 +57,8 @@ class MainActivity : ComponentActivity() {
 fun InitStartScreen(mainViewModel: MainViewModel = ServiceLocator.getMainViewModelSL()){
     // Get the data for the cryptos and the user
     Log.d("Screen state", "Init start screen")
-    mainViewModel.getCryptos()
-    mainViewModel.getUser()
+    //mainViewModel.getCryptos()
+    //mainViewModel.getUser()
     StartScreen(mainViewModel)
 }
 
