@@ -49,7 +49,7 @@ class CryptoRepository(
             Log.d("CryptoError", "IOException: Network Error!!")
             Log.d("CryptoError", e.message!!)
         }
-        return mutableListOf()
+        return getCryptosFromDB()
     }
 
     // Get the yearly price points for a single crypto
@@ -65,6 +65,13 @@ class CryptoRepository(
             Log.d("CryptoError", e.message!!)
         }
         return listOf()
+    }
+
+    suspend fun getCryptosFromDB() : MutableList<CryptoModel>{
+        val cryptos = dbRoom.cryptoDao().getCryptos()
+        val result = mutableListOf<CryptoModel>()
+        cryptos.forEach { result.add(it.toModel()) }
+        return result
     }
 
 }

@@ -64,7 +64,7 @@ class BuySellViewModel: ViewModel() {
     fun getCryptoPrices(name: String){
         viewModelScope.launch {
             // Replace spaces with a hyphen
-            val result = ServiceLocator.getCryptoRepository().getCryptoPrices(name.toLowerCase().replace(' ','-'))
+            val result = ServiceLocator.getCryptoRepository().getCryptoPrices(name.toLowerCase().replace(' ','-').replace('.','-'))
             val newList = mutableListOf<DataPoint>()
 
             result.forEachIndexed{index, element ->

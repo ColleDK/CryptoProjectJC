@@ -60,9 +60,12 @@ class UserInfoViewModel: ViewModel() {
     fun getCryptoPrices(name: String){
         viewModelScope.launch {
             Log.d("UserInfo", "Currently getting $name")
-            val result = ServiceLocator.getRetrofitClient().getCrypto(name.toLowerCase().replace(' ','-')).data
+            val result = ServiceLocator.getRetrofitClient().getCrypto(name.toLowerCase().replace(' ','-').replace('.','-')).data
             // Replace the old state so it will update in the view
             _cryptoPrices[name] = result.priceUsd
+            for (cryp in _cryptoPrices.values){
+                Log.d("EXAMPLE", cryp.toString())
+            }
         }
     }
 }

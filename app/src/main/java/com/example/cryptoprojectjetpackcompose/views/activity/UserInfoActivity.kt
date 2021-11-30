@@ -155,7 +155,10 @@ fun PortfolioTopBar(user: UserModel, cryptoPrices: Map<String, Double>){
         }
         Column(modifier = Modifier.fillMaxWidth(1f)) {
             var points = user.balance
-            user.currentCryptos.forEach { points += cryptoPrices[it.cryptoName] ?: 0.0}
+            user.currentCryptos.forEach { points += cryptoPrices[it.cryptoName]?.times(it.volume) ?: 0.0}
+            for (cryp in cryptoPrices){
+                Log.d("CryptoPrices", cryp.toString())
+            }
             Text(
                 text = "Points: ${"%.3f".format(points)} USD",
                 textAlign = TextAlign.Center,
