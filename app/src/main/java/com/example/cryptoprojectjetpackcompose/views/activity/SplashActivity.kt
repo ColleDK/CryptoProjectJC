@@ -84,6 +84,7 @@ fun SplashScreen(){
 
         // Create a timer for starting the main activity after 1 second
         if (!isHandled) {
+            isHandled = true
             Log.d("splash", "Composing splash screen")
             Handler(Looper.getMainLooper()).postDelayed(
                 {
@@ -95,7 +96,6 @@ fun SplashScreen(){
                     )
                 }, 1000
             )
-            isHandled = true
         }
     }
 }
