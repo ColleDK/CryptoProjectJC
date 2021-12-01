@@ -174,7 +174,7 @@ fun CryptoItem(crypto: CryptoModel){
             // The change in price in the recent 24 Hours
             Text(text = buildAnnotatedString
             {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = if (crypto.changePercent24Hr > 0) Color.Green else Color.Red)){
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = if (crypto.changePercent24Hr > 0) MaterialTheme.colors.textColorGreen else Color.Red)){
                     append("%.3f".format(crypto.changePercent24Hr))
                 }
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)){
