@@ -89,7 +89,7 @@ fun CryptoList(cryptoList: MutableList<CryptoModel>, user: UserModel){
                     )
                 )
         )
-        Column(Modifier.padding(top = 10.dp)) {
+        Column(Modifier.padding(top = 10.dp, bottom = 10.dp)) {
             // Header with user info
             Row(Modifier.fillMaxWidth()) {
                 // If we click the header we want to direct to the user info page
@@ -174,7 +174,7 @@ fun CryptoItem(crypto: CryptoModel){
             // The change in price in the recent 24 Hours
             Text(text = buildAnnotatedString
             {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = if (crypto.changePercent24Hr > 0) MaterialTheme.colors.textColorGreen else Color.Red)){
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = if (crypto.changePercent24Hr > 0) MaterialTheme.colors.textColorGreen else MaterialTheme.colors.textColorRed)){
                     append("%.3f".format(crypto.changePercent24Hr))
                 }
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)){

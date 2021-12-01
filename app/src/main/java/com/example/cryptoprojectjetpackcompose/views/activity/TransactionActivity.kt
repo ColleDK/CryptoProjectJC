@@ -92,7 +92,7 @@ fun TransactionBody(user: UserModel, transactionPics: Map<String, Bitmap>){
             // Create the topbar
             Box(
                 Modifier
-                    .padding(bottom = 10.dp)
+                    .padding(bottom = 10.dp, top = 10.dp)
                     .fillMaxWidth(1f)
                     .clip(CircleShape)
                     .background(
@@ -151,7 +151,7 @@ fun TransactionItem(transaction: TransactionModel, transactionPics: Map<String, 
                 // The state of the transaction i.e. bought/sold/installation
                 Text(
                     text = "${transaction.state}",
-                    color = if (transaction.state == TransactionEntity.Companion.TransactionState.SOLD) Color.Red else Color.Cyan,
+                    color = if (transaction.state == TransactionEntity.Companion.TransactionState.SOLD) MaterialTheme.colors.textColorRed else MaterialTheme.colors.textColorCyan,
                     style = TextStyle(fontWeight = FontWeight.Bold)
                 )
                 Text(

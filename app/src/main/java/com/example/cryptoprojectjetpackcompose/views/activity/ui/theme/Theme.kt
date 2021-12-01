@@ -49,22 +49,32 @@ fun CryptoProjectJetpackComposeTheme(
 }
 
 // Create my own gradient color
+// Uses Material200 colors
 @get:Composable
 val Colors.gradientBottom: Color
-    get() = Color(0xFFEA80FC)
+    get() = Color(0xFFCE93D8)
 
 @get:Composable
 val Colors.gradientTop: Color
-    get() = Color(0xFFB388FF)
+    get() = Color(0xFFB39DDB)
 
 @get:Composable
 val Colors.buttonColor: Color
-    get() = Color(0xFF8C9EFF)
+    get() = Color(0xFF90CAF9)
 
 @get:Composable
 val Colors.itemColor: Color
-    get() = Color(0xFF82B1FF)
+    get() = Color(0xFF9FA8DA)
 
+// Uses Material400 colors
 @get:Composable
 val Colors.textColorGreen: Color
-    get() = Color(0xFF96FF64)
+    get() = Color(0xFF9CCC65)
+
+@get:Composable
+val Colors.textColorRed: Color
+    get() = Color(0xFFEF5350)
+
+@get:Composable
+val Colors.textColorCyan: Color
+    get() = Color(0xFF5C6BC0)
