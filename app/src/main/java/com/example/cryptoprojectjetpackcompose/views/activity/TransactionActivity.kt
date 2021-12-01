@@ -197,8 +197,8 @@ fun InitialTransactionItem(initialTransaction: TransactionModel){
                     style = TextStyle(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    text = "%.3f".format(initialTransaction.price),
-                    color = Color.Black,
+                    text = "${"%.0f".format(initialTransaction.price)} $",
+                    color = MaterialTheme.colors.textColorGreen,
                     style = TextStyle(fontWeight = FontWeight.Bold)
                 )
                 Text(text = "${initialTransaction.timestamp}",
