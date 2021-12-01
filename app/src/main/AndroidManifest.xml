@@ -15,7 +15,7 @@
         <activity
             android:name=".views.activity.SplashActivity"
             android:exported="true"
-            android:label="@string/title_activity_splash"
+            android:label="Cryptocurrency Investor"
             android:noHistory="true"
             android:theme="@style/Theme.CryptoProjectJetpackCompose.NoActionBar">
             <intent-filter>
