@@ -15,7 +15,9 @@ import com.example.cryptoprojectjetpackcompose.model.UserModel
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.HttpException
 import retrofit2.Response
+import java.io.IOException
 import java.util.*
 
 class SellCryptoViewModel: ViewModel() {
@@ -40,27 +42,42 @@ class SellCryptoViewModel: ViewModel() {
         }
     }
 
-    fun getCryptoPic(crypto: CryptoModel){
-        viewModelScope.launch {
-            ServiceLocator.getRetrofitClientPic().getCryptoPic(crypto.symbol.toLowerCase()).enqueue(object: retrofit2.Callback<ResponseBody>{
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    if (response.isSuccessful){
-                        // Replace the old state so it will update in the view
-                        val current = _crypto.value
-                        current.picture = BitmapFactory.decodeStream(response.body()?.byteStream())
+    fun getCryptoPic(crypto: CryptoModel) {
+        try {
+            viewModelScope.launch {
+                ServiceLocator.getRetrofitClientPic().getCryptoPic(crypto.symbol.toLowerCase())
+                    .enqueue(object : retrofit2.Callback<ResponseBody> {
+                        override fun onResponse(
+                            call: Call<ResponseBody>,
+                            response: Response<ResponseBody>
+                        ) {
+                            if (response.isSuccessful) {
+                                // Replace the old state so it will update in the view
+                                val current = _crypto.value
+                                current.picture =
+                                    BitmapFactory.decodeStream(response.body()?.byteStream())
 
-                        _crypto.value = current
-                    }
-                }
+                                _crypto.value = current
+                            }
+                        }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("CryptoPicture", t.toString())
-                    _error.value = ResultCommand(message = "Could not retrieve picture of ${crypto.name}", status = ResultCommand.Status.ERROR)
-                }
-            })
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Log.e("CryptoPicture", t.toString())
+                            _error.value = ResultCommand(
+                                message = "Could not retrieve picture of ${crypto.name}",
+                                status = ResultCommand.Status.ERROR
+                            )
+                        }
+                    })
+            }
+        } catch (e: HttpException){
+            Log.d("CryptoError", "HttpException: Http request didn't respond with 200 (OK)!!")
+            Log.d("CryptoError", e.message!!)
+            _error.value = ResultCommand(message = "HTTP Error ${e.message}", ResultCommand.Status.ERROR)
+        } catch (e: IOException){
+            Log.d("CryptoError", "IOException: Network Error!!")
+            Log.d("CryptoError", e.message!!)
+            _error.value = ResultCommand(message = "IO Error ${e.message}", ResultCommand.Status.ERROR)
         }
     }
 

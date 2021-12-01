@@ -14,7 +14,9 @@ import com.example.cryptoprojectjetpackcompose.model.UserModel
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.HttpException
 import retrofit2.Response
+import java.io.IOException
 
 class UserInfoViewModel: ViewModel() {
     private val _user = mutableStateOf(UserModel(10000.0, mutableSetOf(), mutableListOf()))
@@ -35,37 +37,56 @@ class UserInfoViewModel: ViewModel() {
     val cryptoPics = _cryptoPics
 
     fun getOwnedCryptoPics(symbol: String){
-        viewModelScope.launch {
-            ServiceLocator.getRetrofitClientPic().getCryptoPic(symbol.toLowerCase()).enqueue(object: retrofit2.Callback<ResponseBody>{
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    if (response.isSuccessful){
-                        // Replace the old state so it will update in the view
-                        _cryptoPics[symbol] = BitmapFactory.decodeStream(response.body()?.byteStream())
-                    }
-                }
+        try {
+            viewModelScope.launch {
+                ServiceLocator.getRetrofitClientPic().getCryptoPic(symbol.toLowerCase())
+                    .enqueue(object : retrofit2.Callback<ResponseBody> {
+                        override fun onResponse(
+                            call: Call<ResponseBody>,
+                            response: Response<ResponseBody>
+                        ) {
+                            if (response.isSuccessful) {
+                                // Replace the old state so it will update in the view
+                                _cryptoPics[symbol] =
+                                    BitmapFactory.decodeStream(response.body()?.byteStream())
+                            }
+                        }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("CryptoPicture", t.toString())
-                }
-            })
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Log.e("CryptoPicture", t.toString())
+                        }
+                    })
+            }
+        } catch (e: HttpException){
+            Log.d("CryptoError", "HttpException: Http request didn't respond with 200 (OK)!!")
+            Log.d("CryptoError", e.message!!)
+        } catch (e: IOException){
+            Log.d("CryptoError", "IOException: Network Error!!")
+            Log.d("CryptoError", e.message!!)
         }
     }
 
     private val _cryptoPrices = mutableStateMapOf<String, Double>()
     val cryptoPrices = _cryptoPrices
 
-    fun getCryptoPrices(name: String){
-        viewModelScope.launch {
-            Log.d("UserInfo", "Currently getting $name")
-            val result = ServiceLocator.getRetrofitClient().getCrypto(name.toLowerCase().replace(' ','-').replace('.','-')).data
-            // Replace the old state so it will update in the view
-            _cryptoPrices[name] = result.priceUsd
-            for (cryp in _cryptoPrices.values){
-                Log.d("EXAMPLE", cryp.toString())
+    fun getCryptoPrices(name: String) {
+        try {
+            viewModelScope.launch {
+                Log.d("UserInfo", "Currently getting $name")
+                val result = ServiceLocator.getRetrofitClient()
+                    .getCrypto(name.toLowerCase().replace(' ', '-').replace('.', '-')).data
+                // Replace the old state so it will update in the view
+                _cryptoPrices[name] = result.priceUsd
+                for (cryp in _cryptoPrices.values) {
+                    Log.d("EXAMPLE", cryp.toString())
+                }
             }
+        } catch (e: HttpException){
+            Log.d("CryptoError", "HttpException: Http request didn't respond with 200 (OK)!!")
+            Log.d("CryptoError", e.message!!)
+        } catch (e: IOException){
+            Log.d("CryptoError", "IOException: Network Error!!")
+            Log.d("CryptoError", e.message!!)
         }
     }
 }

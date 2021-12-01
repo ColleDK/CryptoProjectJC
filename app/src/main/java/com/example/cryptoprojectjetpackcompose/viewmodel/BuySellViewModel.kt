@@ -12,7 +12,9 @@ import com.madrapps.plot.line.DataPoint
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.HttpException
 import retrofit2.Response
+import java.io.IOException
 
 class BuySellViewModel: ViewModel() {
     private val _user = mutableStateOf(UserModel(10000.0, mutableSetOf(), mutableListOf()))
@@ -39,40 +41,59 @@ class BuySellViewModel: ViewModel() {
     }
 
     fun getCryptoPic(crypto: CryptoModel){
-        viewModelScope.launch {
-            ServiceLocator.getRetrofitClientPic().getCryptoPic(crypto.symbol.toLowerCase()).enqueue(object: retrofit2.Callback<ResponseBody>{
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    if (response.isSuccessful){
-                        // Replace the old state so it will update in the view
-                        val current = _crypto.value
-                        current.picture = BitmapFactory.decodeStream(response.body()?.byteStream())
+        try {
+            viewModelScope.launch {
+                ServiceLocator.getRetrofitClientPic().getCryptoPic(crypto.symbol.toLowerCase())
+                    .enqueue(object : retrofit2.Callback<ResponseBody> {
+                        override fun onResponse(
+                            call: Call<ResponseBody>,
+                            response: Response<ResponseBody>
+                        ) {
+                            if (response.isSuccessful) {
+                                // Replace the old state so it will update in the view
+                                val current = _crypto.value
+                                current.picture =
+                                    BitmapFactory.decodeStream(response.body()?.byteStream())
 
-                        _crypto.value = current
-                    }
-                }
+                                _crypto.value = current
+                            }
+                        }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("CryptoPicture", t.toString())
-                }
-            })
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Log.e("CryptoPicture", t.toString())
+                        }
+                    })
+            }
+        }  catch (e: HttpException){
+            Log.d("CryptoError", "HttpException: Http request didn't respond with 200 (OK)!!")
+            Log.d("CryptoError", e.message!!)
+        } catch (e: IOException){
+            Log.d("CryptoError", "IOException: Network Error!!")
+            Log.d("CryptoError", e.message!!)
         }
     }
 
-    fun getCryptoPrices(name: String){
-        viewModelScope.launch {
-            // Replace spaces with a hyphen
-            val result = ServiceLocator.getCryptoRepository().getCryptoPrices(name.toLowerCase().replace(' ','-').replace('.','-'))
-            val newList = mutableListOf<DataPoint>()
+    fun getCryptoPrices(name: String) {
+        try {
+            viewModelScope.launch {
+                // Replace spaces with a hyphen
+                val result = ServiceLocator.getCryptoRepository()
+                    .getCryptoPrices(name.toLowerCase().replace(' ', '-').replace('.', '-'))
+                val newList = mutableListOf<DataPoint>()
 
-            result.forEachIndexed{index, element ->
-                newList.add(DataPoint(index.toFloat(), element.priceUsd.toFloat()))
+                result.forEachIndexed { index, element ->
+                    newList.add(DataPoint(index.toFloat(), element.priceUsd.toFloat()))
+                }
+
+                _cryptoPrices.value = newList
+
             }
-
-            _cryptoPrices.value = newList
-
+        }  catch (e: HttpException){
+            Log.d("CryptoError", "HttpException: Http request didn't respond with 200 (OK)!!")
+            Log.d("CryptoError", e.message!!)
+        } catch (e: IOException){
+            Log.d("CryptoError", "IOException: Network Error!!")
+            Log.d("CryptoError", e.message!!)
         }
     }
 
