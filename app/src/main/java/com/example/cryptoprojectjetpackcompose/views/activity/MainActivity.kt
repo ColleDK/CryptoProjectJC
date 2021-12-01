@@ -178,7 +178,7 @@ fun CryptoItem(crypto: CryptoModel){
                     append("%.3f".format(crypto.changePercent24Hr))
                 }
                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)){
-                    append(" USD")
+                    append(" %")
                 }
             },
                 Modifier

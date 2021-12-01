@@ -176,7 +176,7 @@ fun PortfolioTopBar(user: UserModel, cryptoPrices: Map<String, Double>){
             Text(
                 text = "My Portfolio",
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(1f).padding(start = 10.dp, end = 10.dp),
+                modifier = Modifier.fillMaxWidth(1f).padding(start = 10.dp, end = 10.dp, top = 20.dp),
                 color = Color.Black,
                 style = TextStyle(fontWeight = FontWeight.Bold)
             )
