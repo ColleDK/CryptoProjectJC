@@ -307,7 +307,8 @@ fun Alert(status: ResultCommand.Status, message: String, openValue: () -> Boolea
                                 Text("Finish", color = Color.Black, style = TextStyle(fontWeight = FontWeight.Bold))
                             }
                         }
-                    }
+                    },
+                    backgroundColor = Color.White
                 )
             }
 
