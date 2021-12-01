@@ -227,13 +227,13 @@ fun CryptoSellerUserInfo(user: UserModel, cryptoSymbol: String){
                 )
         ) {}
         Text(text = buildAnnotatedString {
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
                 append("You can only sell cryptocurrency to USD\nYou have ")
             }
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)) {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic, color = Color.Black)) {
                 append("${user.currentCryptos.find { it.cryptoSymbol == cryptoSymbol }?.volume}")
             }
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
                 append(" $cryptoSymbol")
             }
         }, modifier = Modifier.padding(start = 10.dp, end = 10.dp))

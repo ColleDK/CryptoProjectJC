@@ -223,13 +223,13 @@ fun CryptoBuyerUserInfo(user: UserModel){
                 )
         ) {}
         Text(text = buildAnnotatedString {
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
                 append("You can only buy cryptocurrency in USD\nYou have ")
             }
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)) {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic, color = Color.Black)) {
                 append("${user.balance}")
             }
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
                 append(" USD")
             }
         }, modifier = Modifier.padding(start = 10.dp, end = 10.dp))
