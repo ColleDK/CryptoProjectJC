@@ -52,28 +52,28 @@ fun CryptoProjectJetpackComposeTheme(
 // Uses Material200 colors
 @get:Composable
 val Colors.gradientBottom: Color
-    get() = Color(0xFFCE93D8)
+    get() = Color(0xFF450EFF)
 
 @get:Composable
 val Colors.gradientTop: Color
-    get() = Color(0xFFB39DDB)
+    get() = Color(0xFFE100F5)
 
 @get:Composable
 val Colors.buttonColor: Color
-    get() = Color(0xFF90CAF9)
+    get() = Color(0xFFEA5AFC)
 
 @get:Composable
 val Colors.itemColor: Color
-    get() = Color(0xFF9FA8DA)
+    get() = Color(0xFFB364FF)
 
 // Uses Material400 colors
 @get:Composable
 val Colors.textColorGreen: Color
-    get() = Color(0xFF9CCC65)
+    get() = Color(0xFF0FFF50)
 
 @get:Composable
 val Colors.textColorRed: Color
-    get() = Color(0xFFEF5350)
+    get() = Color(0xFFFF3131)
 
 @get:Composable
 val Colors.textColorCyan: Color

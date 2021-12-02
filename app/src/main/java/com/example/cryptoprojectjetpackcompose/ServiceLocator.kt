@@ -1,6 +1,8 @@
 package com.example.cryptoprojectjetpackcompose
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -19,9 +21,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ServiceLocator {
     private lateinit var applicationContext: Context
+    private lateinit var apiKey: String
 
     fun init(applicationContext: Context){
         this.applicationContext = applicationContext
+
+        // https://www.geeksforgeeks.org/how-to-hide-api-and-secret-keys-in-android-studio/
+        val ai: ApplicationInfo = applicationContext.packageManager.getApplicationInfo(applicationContext.packageName, PackageManager.GET_META_DATA)
+        apiKey = ai.metaData["apiKey"].toString()
     }
 
     private val dbRoom by lazy {
@@ -122,6 +129,9 @@ object ServiceLocator {
     fun getSellCryptoViewModelSL() = this.sellCryptoViewModel
     fun getUserInfoViewModelSL() = this.userInfoViewModel
     fun getTransactionViewModelSL() = this.transactionViewModel
+
+    // API key
+    fun getAPIKey() = this.apiKey
 
     // Connectivity
     // https://stackoverflow.com/questions/57284582/networkinfo-has-been-deprecated-by-api-29
